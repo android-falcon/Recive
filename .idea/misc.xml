@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/dell54/AndroidStudioProjects/menu_flutter/SendRecive/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.213" />
+        <entry key="..\:/Users/dell54/AndroidStudioProjects/menu_flutter/SendRecive/app/src/main/res/drawable/ic_date_range_black_24dp.xml" value="0.213" />
+        <entry key="..\:/Users/dell54/AndroidStudioProjects/menu_flutter/SendRecive/app/src/main/res/layout-hdpi/activity_recive__direct.xml" value="0.18" />
+        <entry key="..\:/Users/dell54/AndroidStudioProjects/menu_flutter/SendRecive/app/src/main/res/layout-mdpi/activity_recive__direct.xml" value="0.33" />
+        <entry key="..\:/Users/dell54/AndroidStudioProjects/menu_flutter/SendRecive/app/src/main/res/layout/activity_main.xml" value="1.565625" />
+        <entry key="..\:/Users/dell54/AndroidStudioProjects/menu_flutter/SendRecive/app/src/main/res/layout/activity_print_po.xml" value="0.30625" />
+        <entry key="..\:/Users/dell54/AndroidStudioProjects/menu_flutter/SendRecive/app/src/main/res/layout/activity_recive__direct.xml" value="0.5205128205128206" />
+        <entry key="..\:/Users/dell54/AndroidStudioProjects/menu_flutter/SendRecive/app/src/main/res/layout/activity_recive__po.xml" value="0.39140625" />
+        <entry key="..\:/Users/dell54/AndroidStudioProjects/menu_flutter/SendRecive/app/src/main/res/layout/search_vendor.xml" value="0.30859375" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

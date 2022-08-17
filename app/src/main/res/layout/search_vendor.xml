@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/layer1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:text="@string/select_area"
+            android:drawableStart="@drawable/ic_settings_black_24dp"
+            android:textColor="@color/dark_blue"
+            android:drawablePadding="5dp"
+            android:textSize="16sp"
+            android:drawableLeft="@drawable/ic_settings_black_24dp" />
+
+
+
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp">
+
+        <EditText
+            android:id="@+id/searchText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:visibility="visible"
+            android:layout_margin="3dp"
+
+            android:hint="type here ...."
+            android:drawableEnd="@drawable/ic_baseline_search_24"
+            android:textColor="@color/dark_blue"
+            android:drawablePadding="5dp"
+            android:textSize="16sp"
+            android:drawableRight="@drawable/ic_baseline_search_24" />
+
+
+
+    </TableRow>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="150dp">
+        <ListView
+            android:id="@+id/listview_area"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:dividerHeight="1dp"
+            android:listSelector="@color/layer4"
+
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:padding="5dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:layout_margin="15dp">
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/dark_gradiant_smallborder"
+            android:elevation="5dp"
+            android:text="Save"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+</LinearLayout>
