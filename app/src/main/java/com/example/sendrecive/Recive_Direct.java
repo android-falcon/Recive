@@ -455,6 +455,7 @@ public class Recive_Direct extends AppCompatActivity {
                 pdValidation.dismissWithAnimation();
                 if(error.getCause() instanceof JSONException)
                 {
+                    Log.e("displayErrorDialog",""+error.getCause().getMessage());
                     displayErrorDialog("رقم المورد  خاطئ");
                 }
                 else

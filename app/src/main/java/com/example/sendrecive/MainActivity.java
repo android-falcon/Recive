@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         dataBaseHandler = new DataBaseHandler(this);
         database = dataBaseHandler.getWritableDatabase();
         ImportData importData =new ImportData(MainActivity.this);
-        importData.getUnitData("01/12/2021","16/08/2022");
+//        importData.getUnitData("01/12/2021","16/08/2022");
         initView();
         last_ipAddres = dataBaseHandler.getIP();
         buttonClick = new AlphaAnimation(1F, 0.2F);
