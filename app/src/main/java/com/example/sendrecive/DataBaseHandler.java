@@ -95,7 +95,7 @@ private static final String UnitSERIAL="UnitSERIAL";
     private static final String     PURCHASEPRICE="PURCHASEPRICE";
     private static final  String  UNIT_NAME="UNIT_NAME";
     private static final   String         ORG_SALEPRICE="ORG_SALEPRICE";
-    private static final  String  OLD_SALE_PRICE="ORG_SALEPRICE";
+    private static final  String  OLD_SALE_PRICE="OLD_SALE_PRICE";
 
 
     @Override
@@ -305,59 +305,76 @@ try {
         db.close();
     }
 
-    public List<ItemsUnit> getItemUnits(String grn,String flag) {
-        List<ItemsUnit> itemsUnitList = new ArrayList<ItemsUnit>();
+    public List<String> getItemUnits(String itemno,String flag) {
+        List<String> itemsUnitList = new ArrayList<String>();
 
-        String selectQuery ="SELECT DISTINCT ITEMU FROM ItemsUnit_TABLE WHERE ITEMOCODE = :itemNo AND ITEMU <> ''";
+        String selectQuery ="SELECT DISTINCT ITEMU FROM ItemsUnitTable WHERE ITEMOCODE = '"+itemno+"' AND ITEMU <> ''";
 
 
 
         db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
+        Log.e("cursor===",""+cursor.getCount()+"");
         if (cursor.moveToFirst()) {
             do {
                 ItemsUnit itemsUnit = new ItemsUnit();
 
-                itemsUnit.setSALEPRICE(cursor.getString(1));
-                itemsUnit.setITEMOCODE(cursor.getString(2));
-                itemsUnit.setITEMBARCODE(cursor.getString(3));
-                itemsUnit.setITEMU(cursor.getString(4));
-                itemsUnit.setUQTY(cursor.getString(5));
-                itemsUnit.setUSERIAL(cursor.getString(6));
+//                itemsUnit.setSALEPRICE(cursor.getString(1));
+//                itemsUnit.setITEMOCODE(cursor.getString(2));
+//                itemsUnit.setITEMBARCODE(cursor.getString(3));
+//                itemsUnit.setITEMU(cursor.getString(4));
+//                itemsUnit.setUQTY(cursor.getString(5));
+//                itemsUnit.setUSERIAL(cursor.getString(6));
+//
+//                itemsUnit.setCALCQTY(cursor.getString(7));
+//                itemsUnit.setWHOLESALEPRC(cursor.getString(8));
+//                itemsUnit.setPURCHASEPRICE(cursor.getString(9));
+//                itemsUnit.setUNIT_NAME(cursor.getString(10));
+//                itemsUnit.setORG_SALEPRICE(cursor.getString(11));
+//                itemsUnit.setOLD_SALE_PRICE(cursor.getString(12));
 
-                itemsUnit.setCALCQTY(cursor.getString(7));
-                itemsUnit.setWHOLESALEPRC(cursor.getString(8));
-                itemsUnit.setPURCHASEPRICE(cursor.getString(9));
-                itemsUnit.setUNIT_NAME(cursor.getString(10));
-                itemsUnit.setORG_SALEPRICE(cursor.getString(11));
-                itemsUnit.setOLD_SALE_PRICE(cursor.getString(12));
-
-                itemsUnitList.add(itemsUnit);
-                Log.e("itemsUnitList",""+itemsUnitList.size());
+                itemsUnitList.add(cursor.getString(0));
+                Log.e("itemsUnitList===",""+itemsUnitList.size());
             } while (cursor.moveToNext());
         }
 
         return itemsUnitList;
     }
 
-    public double getConvRate() {
+    public double getConvRate(String itemNo, String unitId) {
         double UQTY = 1;
         // Select All Query
-        String selectQuery = "SELECT  UQTY FROM " + ItemsUnitTable;
+        String selectQuery = "SELECT  UQTY FROM " + ItemsUnitTable+" WHERE ITEMOCODE ='"+itemNo +"' AND ITEMU ='"+unitId+"'";
         ItemsUnit itemsUnit=new ItemsUnit();
 
         db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                UQTY= Double.parseDouble(cursor.getString(5));
+                UQTY= Double.parseDouble(cursor.getString(0));
             }
             while (cursor.moveToNext());
         }
         Log.e("getUQTY",""+UQTY);
         return UQTY;
     }
+    public double getunitPrice(String itemNo, String unitId) {
+        double price = 1;
+        // Select All Query
+        String selectQuery = "SELECT  SALEPRICE FROM " + ItemsUnitTable+" WHERE ITEMOCODE ='"+itemNo +"' AND ITEMU ='"+unitId+"'";
+        ItemsUnit itemsUnit=new ItemsUnit();
 
+        db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                price= Double.parseDouble(cursor.getString(0));
+            }
+            while (cursor.moveToNext());
+        }
+        Log.e("price==",""+price);
+        return price;
+    }
 
     public List<ReciveMaster> getReciveMaster(String grn,String flag) {
         List<ReciveMaster> reciveList = new ArrayList<ReciveMaster>();

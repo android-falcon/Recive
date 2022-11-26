@@ -6,4 +6,9 @@
     <string name="load">Load Vendor</string>
     <string name="ok">OK</string>
     <string name="savedSuccsesfule">Saved Successfully</string>
+    <string name="todate">To Date</string>
+    <string name="fromdate">From Date</string>
+    <string name="getitemunit">Get Item Units</string>
+    <string name="itemunit">ItemUnit</string>
+    <string name="app_done">Done</string>
 </resources>

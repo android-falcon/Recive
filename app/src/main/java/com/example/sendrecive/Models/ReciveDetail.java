@@ -17,6 +17,24 @@ public class ReciveDetail {
     private String DISCL;
     private String EXPDATE;
     private  String ITEM_NAME;
+    private   String Cal_Qty;
+    private    String UnitID;
+
+    public String getUnitID() {
+        return UnitID;
+    }
+
+    public void setUnitID(String unitID) {
+        UnitID = unitID;
+    }
+
+    public String getCal_Qty() {
+        return Cal_Qty;
+    }
+
+    public void setCal_Qty(String cal_Qty) {
+        Cal_Qty = cal_Qty;
+    }
 
     public String getITEM_NAME() {
         return ITEM_NAME;

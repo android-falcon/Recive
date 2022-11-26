@@ -1,6 +1,7 @@
 package com.example.sendrecive;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
@@ -32,14 +34,21 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
+    public   TextView fromdate,todate;
     SliderLayout sliderLayout;
     FloatingActionButton addSetting,fab_add_po,fab_print_po,fab_add_DSD,fab_print_DSD;
     LinearLayout first_linear,second_linear;
@@ -53,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
      ImageView companeyLogo;
     Animation animation,anim_move_to_right,anim_move_to_left;
      AlphaAnimation buttonClick;
-
+    ImportData importData;
+Dialog ItemUnitsdialog;
+    Calendar myCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         dataBaseHandler = new DataBaseHandler(this);
         database = dataBaseHandler.getWritableDatabase();
-        ImportData importData =new ImportData(MainActivity.this);
+        importData =new ImportData(MainActivity.this);
 //        importData.getUnitData("01/12/2021","16/08/2022");
         initView();
         last_ipAddres = dataBaseHandler.getIP();
@@ -233,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
 
                     dataBaseHandler.deleteSetting();
                     dataBaseHandler.addSetting(newSetting);
+                    getitemUnit();
                     dialog.dismiss();
 
                 }
@@ -350,4 +362,79 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+    private void getitemUnit(){
+        Log.e("getitemUnit","getitemUnit");
+       importData=new ImportData(MainActivity.this);
+
+        ItemUnitsdialog = new Dialog(MainActivity.this);
+        ItemUnitsdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        ItemUnitsdialog.setCancelable(true);
+        ItemUnitsdialog.setContentView(R.layout.datefor_itemunit);
+
+        fromdate= ItemUnitsdialog.findViewById(R.id.fromdate);
+        todate= ItemUnitsdialog.findViewById(R.id.todate);
+
+        myCalendar = Calendar.getInstance();
+        Date currentTimeAndDate = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+        String today = df.format(currentTimeAndDate);
+        fromdate.setText(today);
+        todate.setText(today);
+        fromdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(MainActivity.this, openDatePickerDialog(0), myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+
+        todate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(MainActivity.this, openDatePickerDialog(1), myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        ItemUnitsdialog.findViewById(R.id.done).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ItemUnitsdialog.dismiss();
+                dataBaseHandler.deleteItemUnit();
+                importData.getUnitData(fromdate.getText().toString().trim(), todate.getText().toString().trim());
+
+            }
+        });
+
+        ItemUnitsdialog.show();
+    }
+    public DatePickerDialog.OnDateSetListener openDatePickerDialog(final int flag) {
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel(flag);
+            }
+
+        };
+        return date;
+    }
+    private void updateLabel(int flag) {
+
+        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        if (flag == 0)
+            fromdate.setText(sdf.format(myCalendar.getTime()));
+        else
+
+            todate.setText(sdf.format(myCalendar.getTime()));
+    }
 }

@@ -133,7 +133,7 @@ public class Recive_Direct extends AppCompatActivity {
     private List<String> listAreaName_filtered=new ArrayList<>();
     private  List<VendorInfo> listAllVendor=new ArrayList<>();
     private  List<VendorInfo> listAllVendor_filtered=new ArrayList<>();
-
+    Spinner unitSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -240,6 +240,7 @@ public class Recive_Direct extends AppCompatActivity {
                                     suplier_text = supplier_No.getText().toString();
                                     itemNo_text = item_no.getText().toString();
                                     getItemInfo(suplier_text, itemNo_text);
+                                    fillUnitspinner();
 //                                    getItemInfo("402001011","6281073260841");
 //                                    ITEMCODE=6281073260841&VENDOR=402001011
 
@@ -412,7 +413,14 @@ public class Recive_Direct extends AppCompatActivity {
     }
     private void getData_Vendor() {
 //        final String url = "http://10.0.0.22:8081/GetVendorInfo?VENDOR=" + suplierNo;
-        final String url = "http://"+ipAddres+"/GetVendorAll";
+        String Cono="";
+        if(dataBaseHandler.getSetting()!=null)
+        {
+          Setting  mySetting=dataBaseHandler.getSetting();
+            Cono=mySetting.getCOMPANEY_NAME();}
+
+        final String url = "http://"+ipAddres+"/GetVendorAll"+"?CONO="+Cono;
+        Log.e("url",url);
         listAllVendor.clear();
         listAreaName.clear();
         pdValidation = new SweetAlertDialog(Recive_Direct.this, SweetAlertDialog.PROGRESS_TYPE);
@@ -494,6 +502,7 @@ public class Recive_Direct extends AppCompatActivity {
     }
     @SuppressLint("ClickableViewAccessibility")
     private void initView() {
+        unitSpinner=findViewById(R.id.item_unit);
         transaction_no = (EditText) findViewById(R.id.transaction_no);
         calenderdialog_image=findViewById(R.id.calenderdialog_image);
         search_image=findViewById(R.id.search_image);
@@ -570,11 +579,12 @@ public class Recive_Direct extends AppCompatActivity {
                             reciveMaster.setTAXKIND("0");
                             reciveMaster.setAccCode(suplier_text);
                             reciveMaster.setAccName(supplier_name.getText().toString());
+                            reciveMaster.setAccName(supplier_name.getText().toString());
                             reciveMaster.setCOUNTX(reciver_category_qty.getText().toString());
 
                             reciveListMaster_DSD.add(reciveMaster);
                             reciveListMaster_DSD.get(0).setVENDOR_VHFNO(voucherNo_text);
-                            saveDataSendtoURL();
+             //        saveDataSendtoURL();
 //                        addMasterToDB();
 //                        addDetailToDB();
                         }
@@ -1153,17 +1163,33 @@ public class Recive_Direct extends AppCompatActivity {
 
 
         data.setRECEIVED_QTY(qty.getText().toString());
+        double CountOfItems=dataBaseHandler.getConvRate(item_no.getText().toString().trim(), unitSpinner.getSelectedItem().toString());
+        if(!unitSpinner.getSelectedItem().equals("One Unit"))
+        {  data.setUnitID(unitSpinner.getSelectedItem().toString());
+            data.setCal_Qty(String.valueOf( Double.parseDouble(data.getORDER_QTY())*CountOfItems));
+            double price =dataBaseHandler.getunitPrice(item_no.getText().toString().trim(), unitSpinner.getSelectedItem().toString());
+            data.setPRICE((price/Double.parseDouble(data.getCal_Qty() ))+"");
+        }
+        else {
+            data.setUnitID(unitSpinner.getSelectedItem().toString());
+            data.setCal_Qty(data.getORDER_QTY());
+
+            data.setPRICE(price.getText().toString());
+
+        }
         data.setDISCL("0");
-        data.setPRICE(price.getText().toString());
+
         data.setINDATE(convertToEnglish(today));
         data.setEXPDATE(convertToEnglish(date.getText().toString()));
         double taxValue= calcTax(data.getPRICE());
         data.setTAXDETAIL(taxValue+"");
-       double totalValue= calckTotal(taxValue,data.getORDER_QTY(),data.getPRICE());
+       //double totalValue= calckTotal(taxValue,data.getORDER_QTY(),data.getPRICE());
+        double totalValue= calckTotal(taxValue,data.getCal_Qty(),data.getPRICE());
        data.setTOTAL(totalValue+"");
        data.setITEM_NAME(itemInfoList.get(0).getItemNameA());
         reciveDetailList_DSD.add(data);
-        Log.e("listSize",""+reciveDetailList_DSD.size()+"/t"+   data.getRECEIVED_QTY());
+        Log.e("listSize",""+reciveDetailList_DSD.size()+"\t"+   data.getRECEIVED_QTY());
+        Log.e("dataunit==",""+data.getUnitID()+" Cal_Qty=="+   data.getCal_Qty()+"  price=="+data.getPRICE());
     }
 
     private double calckTotal(double taxValue, String order_qty,String price) {
@@ -1630,6 +1656,27 @@ private void askForPrint() {
 
 
 
+    }
+    void fillUnitspinner(){
+
+        List<String> itemUnits = new ArrayList<>();
+
+        itemUnits.add("One Unit");
+        itemUnits.addAll(dataBaseHandler.getItemUnits(item_no.getText().toString().trim(),"1"));
+
+Log.e("itemUnits",itemUnits.size()+"");
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line, itemUnits);
+
+        unitSpinner.setAdapter(arrayAdapter);
+//        try {
+//            for(int i=0;i<itemUnits.size();i++)
+//                if(itemUnits.get(i).equals(list.get(position).getUnitID()))
+//                    unitSpinner.setSelection(i);
+//
+//        }catch (Exception e){
+//            Log.e("Exception",e.getMessage());
+//        }
     }
 }
 //10.0.0.22/FalconsWebApp/main.dll/

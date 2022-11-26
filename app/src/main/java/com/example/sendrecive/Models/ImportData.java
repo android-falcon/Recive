@@ -38,7 +38,7 @@ public class ImportData {
         //headerDll = "/Falcons/VAN.Dll/";
         getIpAddress();
      //   link = "http://" + ipAddress.trim() + headerDll.trim();
-        link = "http://" +"10.0.0.22:8085" + headerDll.trim();
+        link = "http://" +ipAddress + headerDll.trim()+"/";
         Log.e("Link====",""+link.toString());
         Retrofit retrofit = RetrofitInstance.getInstance(link);
         Log.e("retrofit====",""+retrofit.toString());
@@ -61,7 +61,7 @@ public class ImportData {
     }
 
     public void fetchItemsUnitData(String from,String to){
-        Call<List<ItemsUnit>> myData    = myAPI. GetJrdItemUnit("290",from, to);
+        Call<List<ItemsUnit>> myData    = myAPI. GetJrdItemUnit(CONO,from, to);
         myData.enqueue(new Callback<List<ItemsUnit>>() {
             @Override
             public void onResponse(Call<List<ItemsUnit>> call, retrofit2.Response<List<ItemsUnit>> response) {
