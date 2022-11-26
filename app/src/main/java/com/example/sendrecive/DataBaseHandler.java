@@ -95,7 +95,7 @@ private static final String UnitSERIAL="UnitSERIAL";
     private static final String     PURCHASEPRICE="PURCHASEPRICE";
     private static final  String  UNIT_NAME="UNIT_NAME";
     private static final   String         ORG_SALEPRICE="ORG_SALEPRICE";
-    private static final  String  OLD_SALE_PRICE="ORG_SALEPRICE";
+    private static final  String  OLD_SALE_PRICE="OLD_SALE_PRICE";
 
 
     @Override

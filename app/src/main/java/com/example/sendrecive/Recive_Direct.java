@@ -1,5 +1,6 @@
 package com.example.sendrecive;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -13,7 +14,9 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -27,6 +30,7 @@ import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -48,6 +52,7 @@ import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
@@ -83,15 +88,19 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class Recive_Direct extends AppCompatActivity {
     ListView listview_area;
     EditText supplier_No, transaction_no, item_no,supplierVoucherNo,qty,free_qty;
-    TextView supplier_name, item_name, total_category_qty,reciver_category_qty,price,date;
+    TextView supplier_name, item_name, total_category_qty,reciver_category_qty,price,date,total;
     private static DataBaseHandler dataBaseHandler;
     int codeState=-1;
+    int index=0;
+    double totalValue=0;
+
     ArrayAdapter<String> adapter;
     SweetAlertDialog pdValidation;
     String selectedCustomerId="";
@@ -256,7 +265,11 @@ public class Recive_Direct extends AppCompatActivity {
                         supplier_No.setError("Required");
 
                     if (TextUtils.isEmpty(itemNo_text))
-                        item_no.setError("Required");
+                    {
+//                        item_no.setError("Required");
+//                        item_no.requestFocus();
+                    }
+
                 }
 
                 return false;
@@ -286,7 +299,7 @@ public class Recive_Direct extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
                         try {
-                            Log.e("onResponse: ", "" + jsonArray.getString(0));
+//                            Log.e("onResponse: ", "" + jsonArray.getString(0));
                             JSONObject transactioRecive = jsonArray.getJSONObject(0);
                             DSD_VendorItems itemInfo = new DSD_VendorItems();
 //                            itemInfo.setAccCode(transactioRecive.getString("AccCode"));
@@ -339,6 +352,22 @@ public class Recive_Direct extends AppCompatActivity {
 
             }
 
+        });
+        stringRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
         });
         MySingeltone.getmInstance(Recive_Direct.this).addToRequestQueue(stringRequest);
     }
@@ -408,6 +437,22 @@ public class Recive_Direct extends AppCompatActivity {
             }
 
         });
+        stringRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
         MySingeltone.getmInstance(Recive_Direct.this).addToRequestQueue(stringRequest);
     }
     private void getData_Vendor() {
@@ -461,28 +506,44 @@ public class Recive_Direct extends AppCompatActivity {
                 else
                 if ((error instanceof TimeoutError) || (error instanceof NoConnectionError)) {
                     Toast.makeText(context,
-                            "تأكد من اتصال الانترنت",
+                            error.getCause().getMessage()+"تأكد من اتصال الانترنت 1",
                             Toast.LENGTH_SHORT).show();
                 } else if (error instanceof AuthFailureError) {
                     //TODO
                 } else if (error instanceof ServerError) {
                     Toast.makeText(context,
-                            "تأكد من اتصال الانترنت",
+                            "تأكد من اتصال الانترنت 2"+error.getCause().getMessage(),
                             Toast.LENGTH_SHORT).show();
                     //TODO
                 } else if (error instanceof NetworkError) {
                     Toast.makeText(context,
-                            "تأكد من اتصال الانترنت",
+                            error.getCause().getMessage()+"تأكد من اتصال الانترنت 3",
                             Toast.LENGTH_SHORT).show();
                     //TODO
                 } else if (error instanceof ParseError) {
-                    displayErrorDialog("رقم المورد  خاطئ");
+                    displayErrorDialog("رقم المورد  خاطئ"+error.getCause().getMessage());
                     //TODO
                 }
                 Log.e("onErrorResponse: ", "" + error);
 
             }
 
+        });
+        stringRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
         });
         MySingeltone.getmInstance(Recive_Direct.this).addToRequestQueue(stringRequest);
     }
@@ -508,6 +569,7 @@ public class Recive_Direct extends AppCompatActivity {
         supplierVoucherNo=(EditText) findViewById(R.id.supplierVoucherNo);
         total_category_qty = (TextView) findViewById(R.id.total_category_qty);
         supplier_No=(EditText) findViewById(R.id.supplier_No);
+//
         addQty = (FloatingActionButton) findViewById(R.id.add_qty);
         addQty.setOnClickListener(onClickListener);
         linearDate = (LinearLayout) findViewById(R.id.linearDate);
@@ -520,6 +582,7 @@ public class Recive_Direct extends AppCompatActivity {
             }
         });
         price=(TextView) findViewById(R.id.price);
+        total=(TextView) findViewById(R.id.total);
         myCalendar = Calendar.getInstance();
 //        row=new TableRow(Recive_PO.this);
         save=findViewById(R.id.save);
@@ -1024,15 +1087,86 @@ public class Recive_Direct extends AppCompatActivity {
     }
 
     private void addItemTotable() {
-        if (checkFildesRequired()) {
 
-            final TableRow row=new TableRow(Recive_Direct.this);
+        if (checkFildesRequired()) {
+            ReciveDetail reciveDetail=isExist();
+            if (reciveDetail!=null) {
+            Log.e("isExist","true");
+               updateQty(reciveDetail,qty.getText().toString());
+               tableCheckData.removeView( tableCheckData.getChildAt(index) );
+
+
+                final TableRow row = new TableRow(Recive_Direct.this);
+                row.setPadding(0, 7, 2, 7);
+                row.setTag(position);
+                for (int i = 0; i < 3; i++) {
+
+                    String[] record = {item_name.getText().toString(),  reciveDetailList_DSD.get(index).getORDER_QTY()+ "",
+                            free_qty.getText().toString()};
+
+                    TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+                    row.setLayoutParams(lp);
+                    TextView textView = new TextView(Recive_Direct.this);
+                    textView.setHint(record[i]);
+                    textView.setTextColor(ContextCompat.getColor(Recive_Direct.this, R.color.darkblue_));
+                    textView.setHintTextColor(ContextCompat.getColor(Recive_Direct.this, R.color.darkblue_));
+                    if (i == 0) {
+                        textView.setGravity(Gravity.START);
+                    } else {
+                        textView.setGravity(Gravity.RIGHT);
+                    }
+
+                    TableRow.LayoutParams lp2 = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
+                    textView.setLayoutParams(lp2);
+                    row.addView(textView);
+                }
+                row.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        row.setBackgroundColor(getResources().getColor(R.color.layer4));
+
+                        new SweetAlertDialog(Recive_Direct.this, SweetAlertDialog.WARNING_TYPE)
+                                .setTitleText("تحذير")
+                                .setContentText("هل تريد الحذف بالتأكيد ؟")
+                                .setConfirmText("نعم")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sDialog) {
+                                        int tag = Integer.parseInt(row.getTag().toString());
+                                        tableCheckData.removeView(row);
+                                        reciveDetailList_DSD.remove(tag - 1);
+                                        position--;
+                                        counter--;
+                                        updateTotalqty();
+                                        sDialog.dismissWithAnimation();
+                                    }
+                                })
+                                .setCancelButton("لا", new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        sweetAlertDialog.dismissWithAnimation();
+                                    }
+                                })
+                                .show();
+
+                        return true;
+                    }
+                });//
+                tableCheckData.addView(row,index);
+                updateTotalqty();
+//                item_no.requestFocus();
+                clearData();
+            } else {
+
+
+
+            final TableRow row = new TableRow(Recive_Direct.this);
             row.setPadding(0, 7, 2, 7);
             row.setTag(position);
             for (int i = 0; i < 3; i++) {
 
-                String[] record = {item_name.getText().toString(),qty.getText().toString() + "",
-                        free_qty.getText().toString() };
+                String[] record = {item_name.getText().toString(), qty.getText().toString() + "",
+                        free_qty.getText().toString()};
 
                 TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                 row.setLayoutParams(lp);
@@ -1040,11 +1174,9 @@ public class Recive_Direct extends AppCompatActivity {
                 textView.setHint(record[i]);
                 textView.setTextColor(ContextCompat.getColor(Recive_Direct.this, R.color.darkblue_));
                 textView.setHintTextColor(ContextCompat.getColor(Recive_Direct.this, R.color.darkblue_));
-                if(i==0)
-                {
+                if (i == 0) {
                     textView.setGravity(Gravity.START);
-                }
-                else{
+                } else {
                     textView.setGravity(Gravity.RIGHT);
                 }
 
@@ -1064,9 +1196,9 @@ public class Recive_Direct extends AppCompatActivity {
                             .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                 @Override
                                 public void onClick(SweetAlertDialog sDialog) {
-                                    int tag=Integer.parseInt(row.getTag().toString());
+                                    int tag = Integer.parseInt(row.getTag().toString());
                                     tableCheckData.removeView(row);
-                                    reciveDetailList_DSD.remove(tag-1);
+                                    reciveDetailList_DSD.remove(tag - 1);
                                     position--;
                                     counter--;
                                     updateTotalqty();
@@ -1085,16 +1217,69 @@ public class Recive_Direct extends AppCompatActivity {
                 }
             });//
             adddataToList(row.getTag().toString());
-            Log.e("rowtag",""+row.getTag().toString());
+            Log.e("rowtag", "" + row.getTag().toString());
             tableCheckData.addView(row);
             position++;
             counter = tableCheckData.getChildCount();
             item_no.requestFocus();
-            Log.e("counter",""+counter);
+            Log.e("counter", "" + counter);
             updateTotalqty();
 
             clearData();
         }
+    }
+        setTotalBalance();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void setTotalBalance() {
+        totalValue=0;
+//        totalValue= reciveDetailList_DSD.stream()
+//                .filter(totalV ->totalV!=null&&
+//                        totalV.getTOTAL()!=null)
+//                .mapToDouble(Double.parseDouble(ReciveDetail::getTOTAL))
+//                .sum();
+        totalValue= reciveDetailList_DSD.stream().map(ReciveDetail::getTOTAL).mapToDouble(Double::parseDouble).sum();
+        Log.e("setTotalBalance",""+totalValue);
+        total.setText(totalValue+"");
+//        for(int i=0;i<reciveDetailList_DSD.size();i++){
+//            totalValue+=reciveDetailList_DSD.get(i).getTOTAL();
+//        }
+    }
+
+    private void updateQty(  ReciveDetail reciveDetail, String qty) {
+//        int index= reciveDetailList_DSD.stream())
+//        .map(reciveDetail->reciveDetail.))
+//        .coll
+         index = reciveDetailList_DSD.stream()
+                .map(item -> item.getITEMOCODE())
+                .collect(Collectors.toList())
+                .indexOf(reciveDetail.getITEMOCODE());
+//        Log.e("index==",index+"");
+
+     double oldqty=   Double.parseDouble(reciveDetailList_DSD.get(index).getORDER_QTY());
+        double newqty=  oldqty+ Double.parseDouble(qty);
+        reciveDetailList_DSD.get(index).setORDER_QTY(newqty+"");
+        reciveDetailList_DSD.get(index).setRECEIVED_QTY(newqty+"");
+        double taxValue= calcTax(reciveDetailList_DSD.get(index).getPRICE());
+        reciveDetailList_DSD.get(index).setTAXDETAIL(taxValue+"");
+        double totalValue= calckTotal( taxValue , reciveDetailList_DSD.get(index).getORDER_QTY(), reciveDetailList_DSD.get(index).getPRICE());
+        reciveDetailList_DSD.get(index).setTOTAL(totalValue+"");
+//        Log.e("ORDER_QTY===", "oldqty"+oldqty +","+ reciveDetailList_DSD.get(index).getORDER_QTY());
+    }
+
+    private ReciveDetail isExist() {
+        ReciveDetail recive_direct= reciveDetailList_DSD.stream().
+                filter(item->item_no.getText().toString().equals(item.getITEMOCODE()))
+                .findAny()
+                .orElse(null);
+        if(recive_direct!=null)
+
+        {
+            Log.e("recive_direct",""+recive_direct.getITEMOCODE());
+
+        }
+        return  recive_direct;
     }
 
     private void setVoucherNoToDetailList(String voucherNo_text) {
@@ -1106,12 +1291,22 @@ public class Recive_Direct extends AppCompatActivity {
     }
     private void clearData() {
 
-        item_no.setText("");
-        qty.setText("");
-        free_qty.setText("0");
-        price.setText("");
-        item_name.setText("");
-        date.setText(convertToEnglish(today));
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                item_no.setText("");
+                qty.setText("");
+                free_qty.setText("0");
+                price.setText("");
+                item_name.setText("");
+                date.setText(convertToEnglish(today));
+                Log.e("clearData","hereeeee");
+                item_no.requestFocus();
+
+            }
+        });
+
 
     }
     void clearAllData() {
@@ -1248,6 +1443,7 @@ public class Recive_Direct extends AppCompatActivity {
         } else if (TextUtils.isEmpty(itemNo_text)) {
             allFull = false;
             item_no.setError("Required");
+            item_no.requestFocus();
         } else if (TextUtils.isEmpty(reciverQty_text)) {
             allFull = false;
             qty.setError("Required");
@@ -1336,6 +1532,22 @@ public class Recive_Direct extends AppCompatActivity {
                     Log.e("onErrorResponse: ", "" + error);
                 }
 
+            });
+            stringRequest.setRetryPolicy(new RetryPolicy() {
+                @Override
+                public int getCurrentTimeout() {
+                    return 50000;
+                }
+
+                @Override
+                public int getCurrentRetryCount() {
+                    return 50000;
+                }
+
+                @Override
+                public void retry(VolleyError error) throws VolleyError {
+
+                }
             });
             MySingeltone.getmInstance(Recive_Direct.this).addToRequestQueue(stringRequest);
         }
