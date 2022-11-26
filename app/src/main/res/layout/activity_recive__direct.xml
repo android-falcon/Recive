@@ -86,8 +86,9 @@
                         android:layout_weight="2"
                         android:layout_marginRight="5dp"
                         android:layout_height="25dp"
+                        android:inputType="text"
                         android:background="@drawable/edittext_back"
-
+android:maxLines="1"
                         android:elevation="2dp"
                         android:padding="3dp"
                         android:gravity="center"
@@ -166,6 +167,7 @@
                         android:background="@drawable/edittext_back"
                         android:elevation="2dp"
 
+                        android:inputType="text"
                         android:padding="3dp"
                         android:gravity="center"
                         android:textColor="@color/darkblue_"
@@ -318,7 +320,8 @@
                         android:background="@drawable/edittext_back"
                         android:elevation="2dp"
                         android:padding="3dp"
-
+                        android:maxLines="1"
+                        android:inputType="number"
                         android:gravity="center"
                         android:textColor="@color/darkblue_"
                         android:textSize="14sp"
@@ -614,8 +617,45 @@
                     android:layout_height="125dp" >
 
                 </TableLayout>
+
                     </androidx.core.widget.NestedScrollView>
                 </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_margin="5dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_white_border"
+                    android:elevation="2dp"
+                    android:gravity="center"
+                    android:padding="3dp"
+                    android:text="الاجمالي "
+                    android:textColor="@color/purple_dark"
+                    android:textSize="14sp" />
+
+
+                <TextView
+                    android:id="@+id/total"
+                    android:layout_width="0dp"
+                    android:layout_weight="4"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/edittext_white_border"
+                    android:elevation="2dp"
+                    android:padding="3dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:textColor="@color/darkblue_"
+                    android:textSize="14sp"
+                    />
+
             </LinearLayout>
             <LinearLayout
                 android:layout_height="wrap_content"
