@@ -244,7 +244,7 @@ Dialog ItemUnitsdialog;
 
                     dataBaseHandler.deleteSetting();
                     dataBaseHandler.addSetting(newSetting);
-                    getitemUnit();
+              //      getitemUnit();
                     dialog.dismiss();
 
                 }
