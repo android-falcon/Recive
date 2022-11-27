@@ -293,6 +293,7 @@ public class Recive_Direct extends AppCompatActivity {
 //        final String url = "http://10.0.0.22:8081/GetVendorInfo?VENDOR=2010101010305";
 //        final String url = "http://"+ipAddres+"/GetVendorItems?ITEMCODE="+itemNo_text+"&VENDOR="+suplier_text;
         final String url = "http://"+ipAddres+"/GetItems?ITEMCODE="+itemNo_text;
+        Log.e("url",url);
         //[{"AccCode":"402001011","ItemOCode":"6281073260841","ItemNameA":"عسل السنبلة اكاسيا 12 * 250 غم","PRICE":"5.375","TAXPERC":"16"}]
         JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
