@@ -647,7 +647,7 @@ public class Recive_Direct extends AppCompatActivity {
 
                             reciveListMaster_DSD.add(reciveMaster);
                             reciveListMaster_DSD.get(0).setVENDOR_VHFNO(voucherNo_text);
-             //        saveDataSendtoURL();
+                     saveDataSendtoURL();
 //                        addMasterToDB();
 //                        addDetailToDB();
                         }
