@@ -22,7 +22,7 @@ import java.util.List;
 public class DataBaseHandler extends SQLiteOpenHelper {
     private static String TAG = "DatabaseHandler";
     // Database Version
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 9;
     public static final String DBLOCATION = "/data/data/com.example.abc/databases/";
 
     // Database Name
@@ -71,6 +71,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     private static final String DISCL = "DISCL";
     private static final String EXPDATE = "EXPDATE";
     private static final String ITEM_NAME = "ITEM_NAME";
+    private static final String V_Serial="V_Serial";
     //-------------------------------------------------------------------------
     //-------------------------------------------------------------------------
     private static final String SETTING = "SETTING";
@@ -134,8 +135,8 @@ private static final String UnitSERIAL="UnitSERIAL";
                 + INDATE + " TEXT,"
                 + DISCL + " TEXT,"
                 + EXPDATE + " TEXT,"
-                + ITEM_NAME + " TEXT" +
-
+                + ITEM_NAME + " TEXT,"
+                +   V_Serial+ " TEXT" +
 
                 ")";
         sqLiteDatabase.execSQL(CREATE_RECEIVE_DETAILS);
@@ -239,6 +240,13 @@ try {
 }catch (Exception e){
     Log.e(TAG, e.getMessage().toString());
 }
+
+        try {
+            db.execSQL("ALTER TABLE RECEIVE_DETAILS ADD V_Serial  TEXT");
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage().toString());
+        }
+
     }
 
     public void add_RECIVE_MASTER(ReciveMaster reciveMaster) {
@@ -449,6 +457,7 @@ try {
             values.put(DISCL, reciveDetail.getDISCL());
             values.put(EXPDATE, reciveDetail.getEXPDATE());
             values.put(ITEM_NAME, reciveDetail.getITEM_NAME());
+            values.put(V_Serial, reciveDetail.getVSerial());
             db.insert(RECEIVE_DETAILS, null, values);
             db.close();
         } catch (Exception e) {

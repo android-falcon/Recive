@@ -11,4 +11,6 @@
     <string name="getitemunit">Get Item Units</string>
     <string name="itemunit">ItemUnit</string>
     <string name="app_done">Done</string>
+    <string name="checkqty">checkqty</string>
+
 </resources>

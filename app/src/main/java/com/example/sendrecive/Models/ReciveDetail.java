@@ -19,6 +19,15 @@ public class ReciveDetail {
     private  String ITEM_NAME;
     private   String Cal_Qty;
     private    String UnitID;
+    private    String    VSerial;
+
+    public String getVSerial() {
+        return VSerial;
+    }
+
+    public void setVSerial(String VSerial) {
+        this.VSerial = VSerial;
+    }
 
     public String getUnitID() {
         return UnitID;

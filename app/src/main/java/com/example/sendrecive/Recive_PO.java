@@ -1,15 +1,12 @@
 package com.example.sendrecive;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -37,7 +34,6 @@ import androidx.core.content.ContextCompat;
 
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -48,7 +44,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -88,6 +83,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -102,6 +98,7 @@ public class Recive_PO extends AppCompatActivity {
     public static List<ItemInfo> itemInfoList = new ArrayList<>();
     double pricevalue = 0.0;
     Context context;
+    int index=0;
     String itemNo_text, transNo_text, reciverQty_text, dateExpire_text, reciverCategory_text, voucherNo_text;
     FloatingActionButton addQty;
     private TableLayout tableCheckData;
@@ -187,7 +184,7 @@ public class Recive_PO extends AppCompatActivity {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
-                            boolean result = chechQtyCategory();
+                            boolean result = checkQtyCategory();
                             continueAdd = false;
                             if (result) {
                                 addItemTotable();
@@ -305,6 +302,8 @@ public class Recive_PO extends AppCompatActivity {
                                 reciveMaster.setTaxLV((itemInfo.getString("TaxLV")));
                                 reciveMaster.setDiscLV(itemInfo.getString("DiscLV"));//test
                                 reciveMaster.setPriceL(itemInfo.getString("PriceL"));
+                                reciveMaster.setVSerial(itemInfo.getString("VSerial"));
+
                                 pricevalue = reciveMaster.getPriceL();
                                 setItemInfo(reciveMaster);
                                 itemInfoList.add(reciveMaster);
@@ -625,6 +624,7 @@ public class Recive_PO extends AppCompatActivity {
                             voucher_no.requestFocus();
                         } else {
                             setVoucherNoToDetailList(voucherNo_text);
+                            Log.e("reciveListMaster==",reciveListMaster.size()+"");
                             reciveListMaster.get(0).setVENDOR_VHFNO(voucherNo_text);
                             saveDataSendtoURL();
                             addMasterToDB();
@@ -931,74 +931,167 @@ public class Recive_PO extends AppCompatActivity {
 
         }
     }
+    private ReciveDetail isExist() {
+        ReciveDetail reciveDetail= reciveDetailList.stream().
+                filter(item->item_no.getText().toString().equals(item.getITEMOCODE()))
+                .findAny()
+                .orElse(null);
+        if(reciveDetail!=null)
 
+        {
+            Log.e("reciveDetail",""+reciveDetail.getITEMOCODE());
+
+        }
+        return  reciveDetail;
+    }
     private void addItemTotable() {
         if (checkFildesRequired()) {
+            ReciveDetail reciveDetail=isExist();
+            if(reciveDetail!=null){
+                Log.e("isExist","true");
 
-            final TableRow row = new TableRow(Recive_PO.this);
-            qty_total = calckQty();
-            row.setPadding(1, 7, 1, 5);
-            row.setTag(position);
-            for (int i = 0; i < 3; i++) {
 
-                String[] record = {item_name.getText().toString(), qty_total + "",
-                        free_qty.getText().toString()};
 
-                TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-                row.setLayoutParams(lp);
-                TextView textView = new TextView(Recive_PO.this);
-                textView.setHint(record[i]);
-                textView.setTextColor(ContextCompat.getColor(Recive_PO.this, R.color.darkblue_));
-                textView.setHintTextColor(ContextCompat.getColor(Recive_PO.this, R.color.darkblue_));
-                if (i == 0) {
-                    textView.setGravity(Gravity.CENTER);
-                } else {
-                    textView.setGravity(Gravity.CENTER);
+
+
+
+                updateQty(reciveDetail,recived_qty.getText().toString());
+                tableCheckData.removeView( tableCheckData.getChildAt(index) );
+
+
+                final TableRow row = new TableRow(Recive_PO.this);
+                qty_total = calckQty();
+                row.setPadding(1, 7, 1, 5);
+                row.setTag(position);
+                for (int i = 0; i < 3; i++) {
+
+                    String[] record = {item_name.getText().toString(), reciveDetailList.get(index).getRECEIVED_QTY() + "",
+                            free_qty.getText().toString()};
+
+                    TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+                    row.setLayoutParams(lp);
+                    TextView textView = new TextView(Recive_PO.this);
+                    textView.setHint(record[i]);
+                    textView.setTextColor(ContextCompat.getColor(Recive_PO.this, R.color.darkblue_));
+                    textView.setHintTextColor(ContextCompat.getColor(Recive_PO.this, R.color.darkblue_));
+                    if (i == 0) {
+                        textView.setGravity(Gravity.CENTER);
+                    } else {
+                        textView.setGravity(Gravity.CENTER);
+                    }
+                    TableRow.LayoutParams lp2 = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
+                    textView.setLayoutParams(lp2);
+                    row.addView(textView);
                 }
-                TableRow.LayoutParams lp2 = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
-                textView.setLayoutParams(lp2);
-                row.addView(textView);
+                row.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        row.setBackgroundColor(getResources().getColor(R.color.layer4));
+                        new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.WARNING_TYPE)
+                                .setTitleText("تحذير")
+                                .setContentText("هل تريد الحذف بالتأكيد ؟")
+                                .setConfirmText("نعم")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sDialog) {
+                                        int tag = Integer.parseInt(row.getTag().toString());
+                                        tableCheckData.removeView(row);
+                                        reciveDetailList.remove(tag - 1);
+                                        position--;
+                                        counter--;
+                                        updateTotalqty();
+                                        sDialog.dismissWithAnimation();
+                                    }
+                                })
+                                .setCancelButton("لا", new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        sweetAlertDialog.dismissWithAnimation();
+                                    }
+                                })
+                                .show();
+
+
+                        return true;
+                    }
+                });//
+
+                tableCheckData.addView(row,index);
+
+                updateTotalqty();
+                item_no.requestFocus();
+
+                clearData();
+
+
+            }else {
+
+
+                final TableRow row = new TableRow(Recive_PO.this);
+                qty_total = calckQty();
+                row.setPadding(1, 7, 1, 5);
+                row.setTag(position);
+                for (int i = 0; i < 3; i++) {
+
+                    String[] record = {item_name.getText().toString(), qty_total + "",
+                            free_qty.getText().toString()};
+
+                    TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+                    row.setLayoutParams(lp);
+                    TextView textView = new TextView(Recive_PO.this);
+                    textView.setHint(record[i]);
+                    textView.setTextColor(ContextCompat.getColor(Recive_PO.this, R.color.darkblue_));
+                    textView.setHintTextColor(ContextCompat.getColor(Recive_PO.this, R.color.darkblue_));
+                    if (i == 0) {
+                        textView.setGravity(Gravity.CENTER);
+                    } else {
+                        textView.setGravity(Gravity.CENTER);
+                    }
+                    TableRow.LayoutParams lp2 = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
+                    textView.setLayoutParams(lp2);
+                    row.addView(textView);
+                }
+                row.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        row.setBackgroundColor(getResources().getColor(R.color.layer4));
+                        new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.WARNING_TYPE)
+                                .setTitleText("تحذير")
+                                .setContentText("هل تريد الحذف بالتأكيد ؟")
+                                .setConfirmText("نعم")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sDialog) {
+                                        int tag = Integer.parseInt(row.getTag().toString());
+                                        tableCheckData.removeView(row);
+                                        reciveDetailList.remove(tag - 1);
+                                        position--;
+                                        counter--;
+                                        updateTotalqty();
+                                        sDialog.dismissWithAnimation();
+                                    }
+                                })
+                                .setCancelButton("لا", new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        sweetAlertDialog.dismissWithAnimation();
+                                    }
+                                })
+                                .show();
+
+
+                        return true;
+                    }
+                });//
+                adddataToList(row.getTag().toString());
+                tableCheckData.addView(row);
+                position++;
+                counter = tableCheckData.getChildCount();
+                updateTotalqty();
+                item_no.requestFocus();
+
+                clearData();
             }
-            row.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    row.setBackgroundColor(getResources().getColor(R.color.layer4));
-                    new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.WARNING_TYPE)
-                            .setTitleText("تحذير")
-                            .setContentText("هل تريد الحذف بالتأكيد ؟")
-                            .setConfirmText("نعم")
-                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sDialog) {
-                                    int tag = Integer.parseInt(row.getTag().toString());
-                                    tableCheckData.removeView(row);
-                                    reciveDetailList.remove(tag - 1);
-                                    position--;
-                                    counter--;
-                                    updateTotalqty();
-                                    sDialog.dismissWithAnimation();
-                                }
-                            })
-                            .setCancelButton("لا", new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    sweetAlertDialog.dismissWithAnimation();
-                                }
-                            })
-                            .show();
-
-
-                    return true;
-                }
-            });//
-            adddataToList(row.getTag().toString());
-            tableCheckData.addView(row);
-            position++;
-            counter = tableCheckData.getChildCount();
-            updateTotalqty();
-            item_no.requestFocus();
-
-            clearData();
         } else {
             recived_qty.requestFocus();
 
@@ -1013,7 +1106,7 @@ public class Recive_PO extends AppCompatActivity {
     }
 
 
-    private boolean chechQtyCategory() {
+    private boolean checkQtyCategory() {
         int requiredQty = 0;
         int freeQty = 0;
         int reciverQty = 0;
@@ -1034,12 +1127,12 @@ public class Recive_PO extends AppCompatActivity {
 
         }
         if(samQty==1)
-        {
-            if(reciverQty != (freeQty + requiredQty))
+        { Log.e("samQty", "" +reciverQty+"  "+freeQty+"  "+requiredQty );
+            if(reciverQty > (freeQty + requiredQty))
             {
                 new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.WARNING_TYPE)
                         .setTitleText("تحذير")
-                        .setContentText("يجب ان يكون عدد المواد المستلمة مساوي لاجمالي المواد")
+                        .setContentText("يجب ان يكون عدد المواد المستلمة مساوي لاجمالي المواد أو أقل")
                         .setConfirmText("نعم").hideConfirmButton()
                         .show();
 
@@ -1123,14 +1216,21 @@ public class Recive_PO extends AppCompatActivity {
         ReciveDetail data = new ReciveDetail();
         data.setORDERNUMBER(transaction_no.getText().toString());
         data.setVSERIAL(rowNo);
+        data.setVSerial(itemInfoList.get(0).getVSerial());
         data.setITEMOCODE(item_no.getText().toString());
         data.setORDER_QTY(qty_required.getText().toString());
+
+        Log.e("adddataToList","qty_required="+qty_required.getText().toString());
+
         data.setORDER_BONUS(free_qty.getText().toString());
         data.setBONUS(  itemInfoList.get(0).getBonus());
         data.setTAXDETAIL(  itemInfoList.get(0).getTaxLV());
         data.setTOTAL( itemInfoList.get(0).getNetTL());
         data.setDISCL(  itemInfoList.get(0).getDiscLV());
         data.setRECEIVED_QTY(calckQty() + "");
+
+        Log.e("adddataToList","etRECEIVED_QTY="+data.getRECEIVED_QTY());
+
         data.setPRICE(  itemInfoList.get(0).getPriceL().toString());//test
         data.setINDATE(today);
         data.setEXPDATE(date.getText().toString());
@@ -1191,6 +1291,8 @@ public class Recive_PO extends AppCompatActivity {
                 jsonObjectDetail.put("EXPDATE", convertToEnglish(reciveDetailList.get(i).getEXPDATE()));
                 Log.e("getAccCode",""+reciveListMaster.get(0).getAccCode());
                 jsonObjectDetail.put("ACCCODE",reciveListMaster.get(0).getAccCode());
+                jsonObjectDetail.put("VSerial",reciveDetailList.get(0).getVSerial());
+                Log.e("VSerial==",""+reciveListMaster.get(i).getAccCode());
                 j.put(jsonObjectDetail);
             } catch (JSONException e) {
                 Log.e("JSONException2===",e.getMessage());
@@ -1797,5 +1899,44 @@ public class Recive_PO extends AppCompatActivity {
 
 
     }
+    private void updateQty(  ReciveDetail reciveDetail, String qty) {
 
+        index = reciveDetailList.stream()
+                .map(item -> item.getITEMOCODE())
+                .collect(Collectors.toList())
+                .indexOf(reciveDetail.getITEMOCODE());
+
+
+        double oldqty=   Double.parseDouble(reciveDetailList.get(index).getRECEIVED_QTY());
+        double newqty=  oldqty+ Double.parseDouble(qty);
+
+        Log.e("newqty","newqty="+newqty+"oldqty="+oldqty);
+
+
+        if(newqty >Double.parseDouble (reciveDetailList.get(index).getBONUS() )+ Double.parseDouble (reciveDetailList.get(index).getORDER_QTY()))
+
+        { new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("تحذير")
+                .setContentText("يجب ان يكون عدد المواد المستلمة مساوي لاجمالي المواد أو أقل")
+                .setConfirmText("نعم").hideConfirmButton()
+                .show();
+        }
+        else{
+        reciveDetailList.get(index).setRECEIVED_QTY(newqty+"");
+///////calc qty
+
+        {    double    bonusQty = Double.parseDouble(   reciveDetailList.get(index).getBONUS());
+
+
+        if (newqty > 0 && newqty > bonusQty) {
+            qty_total = newqty - bonusQty;
+        } else {
+            qty_total = newqty;
+        }
+        int totalQty=(int)qty_total;
+
+
+        reciveDetailList.get(index).setRECEIVED_QTY(totalQty+"");
+        Log.e("reciveDetailList","index="+   reciveDetailList.get(index).getRECEIVED_QTY());
+    }}}
 }

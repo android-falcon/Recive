@@ -11,8 +11,15 @@ public class ItemInfo {
     private String NetTL;
     private String TaxLV;
     private String DiscLV;
+    private String  VSerial;
 
+    public String getVSerial() {
+        return VSerial;
+    }
 
+    public void setVSerial(String VSerial) {
+        this.VSerial = VSerial;
+    }
 
     public ItemInfo() {
     }
