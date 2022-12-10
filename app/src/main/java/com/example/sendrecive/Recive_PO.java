@@ -127,7 +127,8 @@ public class Recive_PO extends AppCompatActivity {
     boolean dayCorrect=false,monthCorrect=false,yearCorrect=false,leepYear=false,monthTow=false;
     String fullDate="";
     LinearLayout linearDate;
-
+    TextView total;
+    double totalValue=0;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -303,7 +304,8 @@ public class Recive_PO extends AppCompatActivity {
                                 reciveMaster.setDiscLV(itemInfo.getString("DiscLV"));//test
                                 reciveMaster.setPriceL(itemInfo.getString("PriceL"));
                                 reciveMaster.setVSerial(itemInfo.getString("VSerial"));
-
+                                Log.e("setVSerial: ", "setVSerial" + itemInfo.getString("VSerial"));
+                                Log.e("setVSerial: ", "setVSerial" + itemInfo.getString("VSerial"));
                                 pricevalue = reciveMaster.getPriceL();
                                 setItemInfo(reciveMaster);
                                 itemInfoList.add(reciveMaster);
@@ -510,6 +512,7 @@ public class Recive_PO extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void initView() {
+        total=(TextView) findViewById(R.id.total);
         date = (TextView) findViewById(R.id.date_expire);
         calenderdialog_image=findViewById(R.id.calenderdialog_image);
         calenderdialog_image.setOnClickListener(onClickListener);
@@ -1096,6 +1099,7 @@ public class Recive_PO extends AppCompatActivity {
             recived_qty.requestFocus();
 
         }
+        setTotalBalance();
     }
 
     private void setVoucherNoToDetailList(String voucherNo_text) {
@@ -1217,6 +1221,7 @@ public class Recive_PO extends AppCompatActivity {
         data.setORDERNUMBER(transaction_no.getText().toString());
         data.setVSERIAL(rowNo);
         data.setVSerial(itemInfoList.get(0).getVSerial());
+        Log.e("VSerial==","VSerial="+itemInfoList.get(0).getVSerial());
         data.setITEMOCODE(item_no.getText().toString());
         data.setORDER_QTY(qty_required.getText().toString());
 
@@ -1278,6 +1283,7 @@ public class Recive_PO extends AppCompatActivity {
                 jsonObjectDetail.put("VHFNO", "0");
                 jsonObjectDetail.put("ITEMOCODE", reciveDetailList.get(i).getITEMOCODE());
                 jsonObjectDetail.put("VSERIAL", reciveDetailList.get(i).getVSERIAL());
+                Log.e("VSERIAL==",reciveDetailList.get(i).getVSERIAL()+"");
                 jsonObjectDetail.put("ORDER_QTY", reciveDetailList.get(i).getORDER_QTY());
                 jsonObjectDetail.put("ORDER_BONUS", reciveDetailList.get(i).getBONUS());
                 jsonObjectDetail.put("VHFDATE", convertToEnglish(date.getText().toString()));
@@ -1292,7 +1298,7 @@ public class Recive_PO extends AppCompatActivity {
                 Log.e("getAccCode",""+reciveListMaster.get(0).getAccCode());
                 jsonObjectDetail.put("ACCCODE",reciveListMaster.get(0).getAccCode());
                 jsonObjectDetail.put("VSerial",reciveDetailList.get(0).getVSerial());
-                Log.e("VSerial==",""+reciveListMaster.get(i).getAccCode());
+            //    Log.e("VSerial==",""+reciveListMaster.get(i).getAccCode());
                 j.put(jsonObjectDetail);
             } catch (JSONException e) {
                 Log.e("JSONException2===",e.getMessage());
@@ -1593,7 +1599,7 @@ public class Recive_PO extends AppCompatActivity {
         counter=0;
         position=1;
         transaction_no.requestFocus();
-
+        total.setText("");
     }
     void  clearLists(){
         reciveDetailList.clear();
@@ -1939,4 +1945,12 @@ public class Recive_PO extends AppCompatActivity {
         reciveDetailList.get(index).setRECEIVED_QTY(totalQty+"");
         Log.e("reciveDetailList","index="+   reciveDetailList.get(index).getRECEIVED_QTY());
     }}}
+    private void setTotalBalance() {
+        totalValue=0;
+
+        totalValue= reciveDetailList.stream().map(ReciveDetail::getTOTAL).mapToDouble(Double::parseDouble).sum();
+        Log.e("setTotalBalance",""+totalValue);
+        total.setText(totalValue+"");
+
+    }
 }

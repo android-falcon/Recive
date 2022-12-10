@@ -22,7 +22,7 @@ import java.util.List;
 public class DataBaseHandler extends SQLiteOpenHelper {
     private static String TAG = "DatabaseHandler";
     // Database Version
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 12;
     public static final String DBLOCATION = "/data/data/com.example.abc/databases/";
 
     // Database Name
@@ -136,7 +136,7 @@ private static final String UnitSERIAL="UnitSERIAL";
                 + DISCL + " TEXT,"
                 + EXPDATE + " TEXT,"
                 + ITEM_NAME + " TEXT,"
-                +   V_Serial+ " TEXT" +
+                +   V_Serial+ " TEXT DEFAULT ''" +
 
                 ")";
         sqLiteDatabase.execSQL(CREATE_RECEIVE_DETAILS);
@@ -242,9 +242,10 @@ try {
 }
 
         try {
-            db.execSQL("ALTER TABLE RECEIVE_DETAILS ADD V_Serial  TEXT");
+            Log.e("aya","aya");
+            sqLiteDatabase.execSQL("ALTER TABLE RECEIVE_DETAILS ADD V_Serial TEXT DEFAULT ''");
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage().toString());
+            Log.e(TAG, "aya,"+e.getMessage());
         }
 
     }
