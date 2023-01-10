@@ -1110,10 +1110,10 @@ public class Recive_Direct extends AppCompatActivity {
                 final TableRow row = new TableRow(Recive_Direct.this);
                 row.setPadding(0, 7, 2, 7);
                 row.setTag(position);
-                for (int i = 0; i < 3; i++) {
-
+                for (int i = 0; i < 4; i++) {
+                    double total=Double.parseDouble (reciveDetailList_DSD.get(index).getRECEIVED_QTY())*Double.parseDouble(reciveDetailList_DSD.get(index).getPRICE());
                     String[] record = {item_name.getText().toString(),  reciveDetailList_DSD.get(index).getORDER_QTY()+ "",
-                            free_qty.getText().toString()};
+                            free_qty.getText().toString(),new DecimalFormat("###.###").format(total)+""};
 
                     TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                     row.setLayoutParams(lp);
@@ -1174,10 +1174,11 @@ public class Recive_Direct extends AppCompatActivity {
             final TableRow row = new TableRow(Recive_Direct.this);
             row.setPadding(0, 7, 2, 7);
             row.setTag(position);
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 4; i++) {
+              double total= Double.parseDouble( qty.getText().toString() )*Double.parseDouble(price.getText().toString());
 
                 String[] record = {item_name.getText().toString(), qty.getText().toString() + "",
-                        free_qty.getText().toString()};
+                        free_qty.getText().toString(),new DecimalFormat("###.###").format(total)+""};
 
                 TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                 row.setLayoutParams(lp);

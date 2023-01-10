@@ -393,12 +393,13 @@ try {
         if(flag.equals("1"))
         {
             selectQuery = "SELECT  * FROM " + RECEIVE_MASTER +" where VHFNO ='"+grn+"' and ORDERNO <> 'xxxxxxxxxx' ";
+
         }
         else {
             selectQuery = "SELECT  * FROM " + RECEIVE_MASTER +" where VHFNO ='"+grn+"'  and ORDERNO == 'xxxxxxxxxx'";
 
         }
-
+        Log.e("selectQuery",selectQuery+"");
         // Select All Query
 
 

@@ -31,6 +31,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -74,6 +75,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -149,7 +151,7 @@ public class Recive_PO extends AppCompatActivity {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
-
+                            recived_qty.setEnabled(false);
                             getData(transaction_no.getText().toString());
 
                             return true;
@@ -286,6 +288,7 @@ public class Recive_PO extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
                         try {
+                            recived_qty.setEnabled(true);
                             Log.e("onResponse: ", "" + jsonArray.getString(0));
 
                             itemInfoList.clear();
@@ -312,7 +315,7 @@ public class Recive_PO extends AppCompatActivity {
 //                                addToDB();
                             }
                         } catch (Exception e) {
-                            Log.e("Exception", "" + e.getMessage());
+                            Log.e("Exception===", "" + e.getMessage());
                         }
                     }
 
@@ -324,15 +327,18 @@ public class Recive_PO extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 if(error.getCause() instanceof JSONException)
                 {
-                    displayErrorDialog("رقم المادة غير موجود ");
-                    item_no.setSelection(item_no.getText().length() , 0);
+                    displayErrorDialog(item_no.getText().toString()+" رقم المادة غير موجود ");
 
+                    item_no.setSelection(item_no.getText().length() , 0);
+                    item_no.setText("");
+                    item_no.requestFocus();
                 }
                 else
                 if ((error instanceof TimeoutError) || (error instanceof NoConnectionError)) {
                     Toast.makeText(context,
                             "تأكد من اتصال الانترنت",
                             Toast.LENGTH_SHORT).show();
+
                 } else if (error instanceof AuthFailureError) {
                     //TODO
                 } else if (error instanceof ServerError) {
@@ -355,6 +361,7 @@ public class Recive_PO extends AppCompatActivity {
 
                 Log.e("onErrorResponse: ", "" + error.getMessage());
                  notFountItem = true;
+
 //                displayErrorDialog("رقم المادةغير موجود");
 
 //
@@ -432,7 +439,7 @@ public class Recive_PO extends AppCompatActivity {
                                 item_no.requestFocus();
                             }
                         } catch (Exception e) {
-                            Log.e("Exception", "" + e.getMessage());
+                            Log.e("Exception2===", "" + e.getMessage());
                         }
                     }
 
@@ -448,9 +455,13 @@ public class Recive_PO extends AppCompatActivity {
                 if(error.getCause() instanceof JSONException)
                 {
                     if (error.getMessage().contains("6")){
+                        transaction_no.setText("");
+                        transaction_no.requestFocus();
                         displayErrorDialog("تم ترحيل المادة");
                     }
                     if (error.getMessage().contains("3")){
+                        transaction_no.setText("");
+                        transaction_no.requestFocus();
                         displayErrorDialog("الرقم خاطئ");
                     }
 
@@ -461,17 +472,23 @@ public class Recive_PO extends AppCompatActivity {
                     Toast.makeText(context,
                             "تأكد من اتصال الانترنت",
                             Toast.LENGTH_SHORT).show();
+
+                    transaction_no.requestFocus();
                 } else if (error instanceof AuthFailureError) {
                     //TODO
                 } else if (error instanceof ServerError) {
                     Toast.makeText(context,
                             "تأكد من اتصال الانترنت",
                             Toast.LENGTH_SHORT).show();
+
+                    transaction_no.requestFocus();
                     //TODO
                 } else if (error instanceof NetworkError) {
                     Toast.makeText(context,
                             "تأكد من اتصال الانترنت",
                             Toast.LENGTH_SHORT).show();
+
+                    transaction_no.requestFocus();
                     //TODO
                 } else if (error instanceof ParseError) {
 
@@ -519,6 +536,7 @@ public class Recive_PO extends AppCompatActivity {
         transaction_no = (EditText) findViewById(R.id.transaction_no);
         item_no = (EditText) findViewById(R.id.item_no);
         recived_qty = (EditText) findViewById(R.id.recived_qty);
+        recived_qty.setEnabled(false);
         reciver_category_qty = (TextView) findViewById(R.id.reciver_category_qty);
         voucher_no = (EditText) findViewById(R.id.voucher_no);
         supplier_name = (TextView) findViewById(R.id.supplier_name);
@@ -608,7 +626,13 @@ public class Recive_PO extends AppCompatActivity {
             switch (view.getId()) {
                 case R.id.add_qty:
                     view.startAnimation(animation);
-                    addItemTotable();
+                    boolean result = checkQtyCategory();
+                    continueAdd = false;
+                    if (result) {
+                        addItemTotable();
+                    }
+
+               //     addItemTotable();
 
                     break;
                 case R.id.date_expire:
@@ -966,10 +990,10 @@ public class Recive_PO extends AppCompatActivity {
                 qty_total = calckQty();
                 row.setPadding(1, 7, 1, 5);
                 row.setTag(position);
-                for (int i = 0; i < 3; i++) {
-
+                for (int i = 0; i < 4; i++) {
+           double total=Double.parseDouble( reciveDetailList.get(index).getRECEIVED_QTY())*Double.parseDouble(reciveDetailList.get(index).getPRICE())  ;
                     String[] record = {item_name.getText().toString(), reciveDetailList.get(index).getRECEIVED_QTY() + "",
-                            free_qty.getText().toString()};
+                            free_qty.getText().toString(),new DecimalFormat("###.###").format(total)+""};
 
                     TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                     row.setLayoutParams(lp);
@@ -1034,10 +1058,10 @@ public class Recive_PO extends AppCompatActivity {
                 qty_total = calckQty();
                 row.setPadding(1, 7, 1, 5);
                 row.setTag(position);
-                for (int i = 0; i < 3; i++) {
-
+                for (int i = 0; i <4; i++) {
+                  double total=  qty_total*itemInfoList.get(0).getPriceL();
                     String[] record = {item_name.getText().toString(), qty_total + "",
-                            free_qty.getText().toString()};
+                            free_qty.getText().toString(),new DecimalFormat("###.###").format(total)+""};
 
                     TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                     row.setLayoutParams(lp);
@@ -1126,7 +1150,7 @@ public class Recive_PO extends AppCompatActivity {
             freeQty = Integer.parseInt(free_qty.getText().toString());
             reciverQty = Integer.parseInt(recived_qty.getText().toString());
         } catch (Exception e) {
-            Log.e("chechQtyCategory", "" + e.getMessage());
+            Log.e("chechQtyCategory===", "" + e.getMessage());
             return true;
 
         }
@@ -1268,7 +1292,7 @@ public class Recive_PO extends AppCompatActivity {
             jsonObjectMASTER.put("DISC", reciveListMaster.get(0).getDISC());
             jsonObjectMASTER.put("ACCCODE", reciveListMaster.get(0).getAccCode());
         } catch (JSONException e) {
-            Log.e("JSONException===",e.getMessage());
+            Log.e("JSONException3===",e.getMessage());
             e.printStackTrace();
         }
 
@@ -1315,12 +1339,14 @@ public class Recive_PO extends AppCompatActivity {
             Log.e("finalObjectMas",""+finalObject);
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.e("   e.printStackTrace2===", ""+  e.getMessage());
         }
         try {
             finalObject.put("DETAIL", j);
             Log.e("finalObjectDETAIL",""+finalObject);
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.e("   e.printStackTrace33==", ""+  e.getMessage());
         }
 
     }
@@ -1342,6 +1368,7 @@ public class Recive_PO extends AppCompatActivity {
             jsonObjectMASTER.put("DISC", reciveListMaster.get(0).getDISC());
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.e("   e.printStackTrace8==", ""+  e.getMessage());
         }
 
         JSONObject jsonObjectDetail = null;
@@ -1366,6 +1393,7 @@ public class Recive_PO extends AppCompatActivity {
                 jsonObjectDetail.put("EXPDATE", reciveDetailList.get(i).getEXPDATE());
             } catch (JSONException e) {
                 e.printStackTrace();
+                Log.e("   e.printStackTrace9===", ""+  e.getMessage());
             }
 
         }
@@ -1378,12 +1406,14 @@ public class Recive_PO extends AppCompatActivity {
             Log.e("finalObjectMas",""+finalObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.e("   e.printStackTrace99==", ""+  e.getMessage());
         }
         try {
             finalObject.put("DETAIL", j.toString());
             Log.e("finalObjectDETAIL",""+finalObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.e("   e.printStackTrace10==", ""+  e.getMessage());
         }
 
         params.put("JSONSTR", finalObject.toString());
@@ -1481,6 +1511,7 @@ public class Recive_PO extends AppCompatActivity {
                     jsonObjectMASTER.put("DISC", reciveListMaster.get(0).getDISC());
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Log.e("   e.printStackTrace12==", ""+  e.getMessage());
                 }
 
                 JSONObject jsonObjectDetail = null;
@@ -1505,6 +1536,7 @@ public class Recive_PO extends AppCompatActivity {
                         jsonObjectDetail.put("EXPDATE", reciveDetailList.get(i).getEXPDATE());
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        Log.e("   e.printStackTrace7==", ""+  e.getMessage());
                     }
 
                 }
@@ -1515,11 +1547,13 @@ public class Recive_PO extends AppCompatActivity {
                     finalObject.put("MASTER", jsonObjectMASTER.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Log.e("   e.printStackTrace6==", ""+  e.getMessage());
                 }
                 try {
                     finalObject.put("DETAIL", j.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Log.e("   e.printStackTrace8==", ""+  e.getMessage());
                 }
 
                 params.put("JSONSTR",finalObject.toString());
@@ -1635,7 +1669,7 @@ public class Recive_PO extends AppCompatActivity {
         dateExpire_text = date.getText().toString().trim();
         reciverCategory_text = reciver_category_qty.getText().toString().trim();
         voucherNo_text = voucher_no.getText().toString().trim();
-
+Log.e("checkFildesRequired","checkFildesRequired");
         if (TextUtils.isEmpty(transNo_text)) {
             allFull = false;
             transaction_no.setError("Required");
@@ -1858,6 +1892,7 @@ public class Recive_PO extends AppCompatActivity {
                         description = (jsonObject.getString("ErrorDesc"));
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        Log.e("   e.printStackTrace", ""+  e.getMessage());
                     }
                 }
             }
@@ -1866,8 +1901,8 @@ public class Recive_PO extends AppCompatActivity {
 
                         maxSerial=Integer.parseInt(description);
                         updateGRN();
-//                        Log.e("POSTEXECmaxSerial",""+maxSerial);
-                        savedDialog();
+                       Log.e("POSTEXECmaxSerial",""+maxSerial);
+                    savedDialog();
                         askForPrint();
                         addDetailToDB();
                         addMasterToDB();
@@ -1896,13 +1931,13 @@ public class Recive_PO extends AppCompatActivity {
 //        AlertDialog alertDialog = builder.create();
 //        alertDialog.show();
 
-        new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText("تم الحفظ بنجاح")
-                .setContentText("  GRN \t " +maxSerial)
-                .hideConfirmButton()
-                .show();
+//        new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.SUCCESS_TYPE)
+//                .setTitleText("تم الحفظ بنجاح")
+//                .setContentText("  GRN \t " +maxSerial)
+//                .hideConfirmButton()
+//                .show();
 
-
+        Toast.makeText(context, "تم الحفظ بنجاح", Toast.LENGTH_SHORT).show();
 
     }
     private void updateQty(  ReciveDetail reciveDetail, String qty) {
