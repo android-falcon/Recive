@@ -39,10 +39,10 @@ public class ImportData {
         getIpAddress();
      //   link = "http://" + ipAddress.trim() + headerDll.trim();
         link = "http://" +ipAddress + headerDll.trim()+"/";
-        Log.e("Link====",""+link.toString());
-        Retrofit retrofit = RetrofitInstance.getInstance(link);
-        Log.e("retrofit====",""+retrofit.toString());
-        myAPI = retrofit.create(ApiService.class);
+//        Log.e("Link====",""+link.toString());
+//        Retrofit retrofit = RetrofitInstance.getInstance(link);
+//        Log.e("retrofit====",""+retrofit.toString());
+//        myAPI = retrofit.create(ApiService.class);
 
 
 
