@@ -1937,7 +1937,7 @@ Log.e("checkFildesRequired","checkFildesRequired");
 //                .hideConfirmButton()
 //                .show();
 
-        Toast.makeText(context, "تم الحفظ بنجاح", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "تم الحفظ بنجاح"+"  GRN \t " +maxSerial, Toast.LENGTH_LONG).show();
 
     }
     private void updateQty(  ReciveDetail reciveDetail, String qty) {
