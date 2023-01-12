@@ -5,6 +5,16 @@
     android:layoutDirection="rtl"
     android:layout_width="match_parent"
     android:layout_height="450dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+
+        android:elevation="2dp"
+        android:gravity="center"
+        android:padding="3dp"
+        android:text="v 30.1"
+        android:textColor="@color/purple_dark"
+        android:textSize="18sp" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

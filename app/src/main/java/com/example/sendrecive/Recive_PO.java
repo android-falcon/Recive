@@ -118,7 +118,7 @@ public class Recive_PO extends AppCompatActivity {
     int maxSerial = 0,counter = 0,codeState=-1,currentYear=0;
     public  static  String ipAddres="";
     boolean notFountItem=false;
-    String description="";
+    String description="",fd_text="";
     AlphaAnimation buttonClick;
     Animation animation;
     EditText day_editText,month_editText,year_editText;
@@ -268,6 +268,7 @@ public class Recive_PO extends AppCompatActivity {
         qty_required.setText(reciveMaster.getQty());
         free_qty.setText(reciveMaster.getBonus());
         date.requestFocus();
+        fd_text=reciveMaster.getF_D();
         linearDate.setBackground(getResources().getDrawable(R.drawable.edite_fucasable));
        // recived_qty.requestFocus();
 
@@ -307,6 +308,7 @@ public class Recive_PO extends AppCompatActivity {
                                 reciveMaster.setDiscLV(itemInfo.getString("DiscLV"));//test
                                 reciveMaster.setPriceL(itemInfo.getString("PriceL"));
                                 reciveMaster.setVSerial(itemInfo.getString("VSerial"));
+                                reciveMaster.setF_D(itemInfo.getString("F_D"));
                                 Log.e("setVSerial: ", "setVSerial" + itemInfo.getString("VSerial"));
                                 Log.e("setVSerial: ", "setVSerial" + itemInfo.getString("VSerial"));
                                 pricevalue = reciveMaster.getPriceL();
@@ -433,6 +435,7 @@ public class Recive_PO extends AppCompatActivity {
                                 reciveMaster.setCOUNTX(transactioRecive.getString("COUNTX"));
                                 reciveMaster.setDISC(Double.parseDouble(transactioRecive.getString("Disc_1")));
                                 reciveMaster.setTAXKIND("0");//test
+
                                 reciveListMaster.add(reciveMaster);
                                 supplier_name.setText(reciveMaster.getAccName());
                                 total_category_qty.setText(reciveMaster.getCOUNTX());
@@ -1265,6 +1268,7 @@ public class Recive_PO extends AppCompatActivity {
         data.setEXPDATE(date.getText().toString());
         data.setITEM_NAME(itemInfoList.get(0).getDELIVERY_ItemName());
 
+        data.setF_D(fd_text);
         reciveDetailList.add(data);
         Log.e("listSize", "" + reciveDetailList.size() + "/t" + data.getRECEIVED_QTY());
     }
@@ -1322,6 +1326,7 @@ public class Recive_PO extends AppCompatActivity {
                 Log.e("getAccCode",""+reciveListMaster.get(0).getAccCode());
                 jsonObjectDetail.put("ACCCODE",reciveListMaster.get(0).getAccCode());
                 jsonObjectDetail.put("VSerial",reciveDetailList.get(0).getVSerial());
+                jsonObjectDetail.put("F_D",reciveDetailList.get(0).getF_D());
             //    Log.e("VSerial==",""+reciveListMaster.get(i).getAccCode());
                 j.put(jsonObjectDetail);
             } catch (JSONException e) {

@@ -103,7 +103,7 @@ public class Recive_Direct extends AppCompatActivity {
 
     ArrayAdapter<String> adapter;
     SweetAlertDialog pdValidation;
-    String selectedCustomerId="";
+    String selectedCustomerId="",fd_text="";
     String description="";
     public static List<ReciveMaster> reciveListMaster_DSD = new ArrayList<>();
     public static List<DSD_VendorItems> itemInfoList = new ArrayList<>();
@@ -309,6 +309,8 @@ public class Recive_Direct extends AppCompatActivity {
                             itemInfo.setItemNameA(transactioRecive.getString("ItemNameA"));
                             itemInfo.setPRICE(transactioRecive.getString("PRICE"));
                             itemInfo.setTAXPERC(transactioRecive.getString("TAXPERC"));
+                            itemInfo.setF_D(transactioRecive.getString("F_D"));
+                            Log.e("itemInfo",""+itemInfo.getF_D());
                             setData(itemInfo);
                             itemInfoList.add(itemInfo);
 //                                addToDB();
@@ -378,6 +380,7 @@ public class Recive_Direct extends AppCompatActivity {
         item_name.setText(itemInfo.getItemNameA().toString());
         price.setText(itemInfo.getPRICE().toString());
         item_name.setText(itemInfo.getItemNameA().toString());
+        fd_text=itemInfo.getF_D();
         qty.requestFocus();
     }
 
@@ -1384,8 +1387,9 @@ public class Recive_Direct extends AppCompatActivity {
         double totalValue= calckTotal(taxValue,data.getCal_Qty(),data.getPRICE());
        data.setTOTAL(totalValue+"");
        data.setITEM_NAME(itemInfoList.get(0).getItemNameA());
+       data.setF_D(fd_text);
         reciveDetailList_DSD.add(data);
-        Log.e("listSize",""+reciveDetailList_DSD.size()+"\t"+   data.getRECEIVED_QTY());
+        Log.e("listSize",""+reciveDetailList_DSD.size()+"\tgetF_D="+   data.getF_D());
         Log.e("dataunit==",""+data.getUnitID()+" Cal_Qty=="+   data.getCal_Qty()+"  price=="+data.getPRICE());
     }
 
@@ -1833,6 +1837,7 @@ private void askForPrint() {
                 jsonObjectDetail.put("DISCL", reciveDetailList_DSD.get(i).getDISCL());
                 jsonObjectDetail.put("EXPDATE", convertToEnglish(reciveDetailList_DSD.get(i).getEXPDATE()));
                 jsonObjectDetail.put("ACCCODE",  reciveListMaster_DSD.get(0).getAccCode());
+                jsonObjectDetail.put("F_D",reciveDetailList_DSD.get(i).getF_D());
                 j.put(jsonObjectDetail);
             } catch (JSONException e) {
                 e.printStackTrace();
