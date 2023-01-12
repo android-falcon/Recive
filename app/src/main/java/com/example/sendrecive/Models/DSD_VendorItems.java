@@ -6,6 +6,15 @@ public class DSD_VendorItems {
     private String      ItemNameA;
     private String          PRICE;
     private String       TAXPERC;
+    private String       F_D;
+
+    public String getF_D() {
+        return F_D;
+    }
+
+    public void setF_D(String f_D) {
+        F_D = f_D;
+    }
 
     public DSD_VendorItems() {
     }

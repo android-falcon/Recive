@@ -20,6 +20,15 @@ public class ReciveDetail {
     private   String Cal_Qty;
     private    String UnitID;
     private    String    VSerial;
+    private String       F_D;
+
+    public String getF_D() {
+        return F_D;
+    }
+
+    public void setF_D(String f_D) {
+        F_D = f_D;
+    }
 
     public String getVSerial() {
         return VSerial;
