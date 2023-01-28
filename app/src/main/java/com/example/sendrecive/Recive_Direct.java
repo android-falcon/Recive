@@ -117,7 +117,7 @@ public class Recive_Direct extends AppCompatActivity {
     String today;
     int counter=0,currentYear=0;
     public  static  int position=1;
-
+    TextView GrnTextView;
 
     Button save, cancel;
     public  static  List<ReciveDetail> reciveDetailList_DSD;
@@ -567,6 +567,7 @@ public class Recive_Direct extends AppCompatActivity {
     }
     @SuppressLint("ClickableViewAccessibility")
     private void initView() {
+        GrnTextView=findViewById(R.id.GrnTextView);
         unitSpinner=findViewById(R.id.item_unit);
         transaction_no = (EditText) findViewById(R.id.transaction_no);
         calenderdialog_image=findViewById(R.id.calenderdialog_image);
@@ -1696,7 +1697,7 @@ public class Recive_Direct extends AppCompatActivity {
 
                 Log.e("POSTEXECmaxSerial",""+maxSerial);
                 updateGRN();
-              //  savedDialog();
+               savedDialog();
                 askForPrint();
                 addDetailToDB();
                 addMasterToDB();
@@ -1869,11 +1870,11 @@ private void askForPrint() {
 
         new SweetAlertDialog(Recive_Direct.this, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText("تم الحفظ بنجاح")
-                .setContentText("  GRN \t " +maxSerial)
+                .setContentText("  GRN  " +maxSerial)
                 .hideConfirmButton()
                 .show();
 
-
+        GrnTextView.setText(maxSerial+"");
 
     }
     void fillUnitspinner(){

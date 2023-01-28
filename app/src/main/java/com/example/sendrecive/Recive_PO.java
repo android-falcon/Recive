@@ -1,6 +1,7 @@
 package com.example.sendrecive;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -131,6 +132,7 @@ public class Recive_PO extends AppCompatActivity {
     LinearLayout linearDate;
     TextView total;
     double totalValue=0;
+   TextView GrnTextView;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -534,6 +536,7 @@ public class Recive_PO extends AppCompatActivity {
     private void initView() {
         total=(TextView) findViewById(R.id.total);
         date = (TextView) findViewById(R.id.date_expire);
+        GrnTextView=findViewById(R.id.GrnTextView);
         calenderdialog_image=findViewById(R.id.calenderdialog_image);
         calenderdialog_image.setOnClickListener(onClickListener);
         transaction_no = (EditText) findViewById(R.id.transaction_no);
@@ -1267,7 +1270,6 @@ public class Recive_PO extends AppCompatActivity {
         data.setINDATE(today);
         data.setEXPDATE(date.getText().toString());
         data.setITEM_NAME(itemInfoList.get(0).getDELIVERY_ItemName());
-
         data.setF_D(fd_text);
         reciveDetailList.add(data);
         Log.e("listSize", "" + reciveDetailList.size() + "/t" + data.getRECEIVED_QTY());
@@ -1326,7 +1328,8 @@ public class Recive_PO extends AppCompatActivity {
                 Log.e("getAccCode",""+reciveListMaster.get(0).getAccCode());
                 jsonObjectDetail.put("ACCCODE",reciveListMaster.get(0).getAccCode());
                 jsonObjectDetail.put("VSerial",reciveDetailList.get(0).getVSerial());
-                jsonObjectDetail.put("F_D",reciveDetailList.get(0).getF_D());
+                jsonObjectDetail.put("F_D",reciveDetailList.get(i).getF_D());
+
             //    Log.e("VSerial==",""+reciveListMaster.get(i).getAccCode());
                 j.put(jsonObjectDetail);
             } catch (JSONException e) {
@@ -1930,19 +1933,22 @@ Log.e("checkFildesRequired","checkFildesRequired");
 
     private void savedDialog() {
 //        AlertDialog.Builder builder = new AlertDialog.Builder(Recive_PO.this);
-//        builder.setTitle("GRN");
+//        builder.setTitle(" ");
+//
 //        builder.setCancelable(true);
-//        builder.setMessage(""+maxSerial);
+//        builder.setMessage("   GRN = "+maxSerial+"   ");
 //        AlertDialog alertDialog = builder.create();
 //        alertDialog.show();
+//
+        new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText("تم الحفظ بنجاح")
+                .setContentText("  GRN " +maxSerial)
+                .hideConfirmButton()
+                .show();
+        GrnTextView.setText(maxSerial+"");
+//
 
-//        new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.SUCCESS_TYPE)
-//                .setTitleText("تم الحفظ بنجاح")
-//                .setContentText("  GRN \t " +maxSerial)
-//                .hideConfirmButton()
-//                .show();
-
-        Toast.makeText(context, "تم الحفظ بنجاح"+"  GRN \t " +maxSerial, Toast.LENGTH_LONG).show();
+    //    Toast.makeText(context, "تم الحفظ بنجاح"+"  GRN \t " +maxSerial, Toast.LENGTH_LONG).show();
 
     }
     private void updateQty(  ReciveDetail reciveDetail, String qty) {
