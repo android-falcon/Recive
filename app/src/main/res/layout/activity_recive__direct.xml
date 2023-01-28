@@ -172,7 +172,12 @@ android:maxLines="1"
                         android:gravity="center"
                         android:textColor="@color/darkblue_"
                         android:textSize="14sp" />
-
+                    <ImageView
+                        android:id="@+id/edit_image"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:src="@drawable/ic_baseline_edit_24" />
 
                 </LinearLayout>
                 <LinearLayout

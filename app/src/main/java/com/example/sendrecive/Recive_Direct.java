@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -129,7 +130,7 @@ public class Recive_Direct extends AppCompatActivity {
     JSONArray j;
     Animation animation;
      AlphaAnimation buttonClick;
-    ImageView calenderdialog_image,search_image;
+    ImageView calenderdialog_image,search_image,edit_image;
     Dialog dialog;
     String day="",month="",year="";
     int intday=0,intmonth=0,intyeay=0;
@@ -381,6 +382,7 @@ public class Recive_Direct extends AppCompatActivity {
         price.setText(itemInfo.getPRICE().toString());
         item_name.setText(itemInfo.getItemNameA().toString());
         fd_text=itemInfo.getF_D();
+        qty.setEnabled(true);
         qty.requestFocus();
     }
 
@@ -399,6 +401,7 @@ public class Recive_Direct extends AppCompatActivity {
                                 DSD_VendourInfo vendourInfo = new DSD_VendourInfo();
                                 vendourInfo.setAccNameA(transactioRecive.getString("AccNameA"));
                                 supplier_name.setText(vendourInfo.getAccNameA());
+                                item_no.setEnabled(true);
                                 item_no.requestFocus();
 
                         } catch (Exception e) {
@@ -571,9 +574,12 @@ public class Recive_Direct extends AppCompatActivity {
         transaction_no = (EditText) findViewById(R.id.transaction_no);
         calenderdialog_image=findViewById(R.id.calenderdialog_image);
         search_image=findViewById(R.id.search_image);
+        edit_image=findViewById(R.id.edit_image);
+        edit_image.setOnClickListener(onClickListener);
         calenderdialog_image.setOnClickListener(onClickListener);
         search_image.setOnClickListener(onClickListener);
         item_no = (EditText) findViewById(R.id.item_no);
+
         reciver_category_qty = (TextView) findViewById(R.id.reciver_category_qty);
         supplier_name = (TextView) findViewById(R.id.supplier_name);
         item_name = (TextView) findViewById(R.id.item_name);
@@ -606,6 +612,9 @@ public class Recive_Direct extends AppCompatActivity {
         date=(TextView) findViewById(R.id.date);
         date.setOnClickListener(onClickListener);
         getData_Vendor();
+        item_no.setEnabled(false);
+        qty.setEnabled(false);
+
     }
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -628,38 +637,44 @@ public class Recive_Direct extends AppCompatActivity {
                 case R.id.save:
 
                     view.startAnimation(buttonClick);
-                    if (tableCheckData.getChildCount() > 0) {
-                        voucherNo_text=supplierVoucherNo.getText().toString().trim();
-                        if (TextUtils.isEmpty(voucherNo_text)) {
-                            supplierVoucherNo.setError("Required");
-                            supplierVoucherNo.requestFocus();
-                        }
-                        else{
-                            suplier_text = supplier_No.getText().toString().trim();
-                            setVoucherNoToDetailList(voucherNo_text);
-                            ReciveMaster reciveMaster=new ReciveMaster();
-                            reciveMaster.setORDERNO("xxxxxxxxxx");
-                            reciveMaster.setVHFNO(maxSerial+"");
-                            reciveMaster.setIS_POSTED("0");
-                            reciveMaster.setVHFDATE(convertToEnglish(today));
-                            reciveMaster.setVENDOR_VHFDATE(convertToEnglish(today));
-                            reciveMaster.setTAXKIND("0");
-                            reciveMaster.setAccCode(suplier_text);
-                            reciveMaster.setAccName(supplier_name.getText().toString());
-                            reciveMaster.setAccName(supplier_name.getText().toString());
-                            reciveMaster.setCOUNTX(reciver_category_qty.getText().toString());
+                    try {
+                        if (tableCheckData.getChildCount() > 0) {
+                            voucherNo_text=supplierVoucherNo.getText().toString().trim();
+                            if (TextUtils.isEmpty(voucherNo_text)) {
+                                supplierVoucherNo.setError("Required");
+                                supplierVoucherNo.requestFocus();
+                            }
+                            else{
+                                suplier_text = supplier_No.getText().toString().trim();
+                                setVoucherNoToDetailList(voucherNo_text);
+                                ReciveMaster reciveMaster=new ReciveMaster();
+                                reciveMaster.setORDERNO("xxxxxxxxxx");
+                                reciveMaster.setVHFNO(maxSerial+"");
+                                reciveMaster.setIS_POSTED("0");
+                                reciveMaster.setVHFDATE(convertToEnglish(today));
+                                reciveMaster.setVENDOR_VHFDATE(convertToEnglish(today));
+                                reciveMaster.setTAXKIND("0");
+                                reciveMaster.setAccCode(suplier_text);
+                                reciveMaster.setAccName(supplier_name.getText().toString());
+                                reciveMaster.setAccName(supplier_name.getText().toString());
+                                reciveMaster.setCOUNTX(reciver_category_qty.getText().toString());
 
-                            reciveListMaster_DSD.add(reciveMaster);
-                            reciveListMaster_DSD.get(0).setVENDOR_VHFNO(voucherNo_text);
-                     saveDataSendtoURL();
+                                reciveListMaster_DSD.add(reciveMaster);
+                                reciveListMaster_DSD.get(0).setVENDOR_VHFNO(voucherNo_text);
+                                saveDataSendtoURL();
 //                        addMasterToDB();
 //                        addDetailToDB();
+                            }
+
+
+                        } else {
+                            Toast.makeText(context, "املى  بيانات الجدول ", Toast.LENGTH_SHORT).show();
                         }
+                    }catch (Exception e){
+                        Toast.makeText(context, "تأكد من  بيانات الجدول ", Toast.LENGTH_SHORT).show();
 
-
-                    } else {
-                        Toast.makeText(context, "املى  بيانات الجدول ", Toast.LENGTH_SHORT).show();
                     }
+
 
 
                     break;
@@ -691,10 +706,52 @@ public class Recive_Direct extends AppCompatActivity {
                     openSelectAreaDialog();
                     else Toast.makeText(context, "No data available", Toast.LENGTH_SHORT).show();
                     break;
+                case R.id.edit_image:
+                    if(supplier_No.getText().toString().length()!=0)
+                    {
+                        supplier_No.setError(null);
+                        showEditDialog();
+                    }
+                    else supplier_No.setError("*Required");
+                    break;
+                
 
             }
         }
     };
+
+    private void showEditDialog() {
+
+            final EditText editText = new EditText(this);
+//            editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+            SweetAlertDialog sweetMessage= new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
+
+            sweetMessage.setTitleText("رقم المادة");
+            sweetMessage .setConfirmText("Ok");
+            sweetMessage.setCanceledOnTouchOutside(true);
+            sweetMessage.setCustomView(editText);
+            sweetMessage.setConfirmButton(getResources().getString(R.string.ok), new SweetAlertDialog.OnSweetClickListener() {
+                @Override
+                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                    if(editText.getText().toString().length()!=0)
+                    {
+                        item_no.setText(editText.getText().toString().trim());
+                        suplier_text = supplier_No.getText().toString();
+                        itemNo_text = item_no.getText().toString();
+                        getItemInfo(suplier_text, itemNo_text);
+
+                        sweetAlertDialog.dismissWithAnimation();
+
+                    }
+                    else {
+                        editText.setError("Incorrect");
+                    }
+                }
+            })
+
+                    .show();
+
+    }
 
     private void showSearchDialog() {
 
@@ -1338,6 +1395,8 @@ public class Recive_Direct extends AppCompatActivity {
         counter=0;
         position=1;
         supplier_No.requestFocus();
+        item_no.setEnabled(false);
+        qty.setEnabled(false);
 
     }
     public  static void clearLists()

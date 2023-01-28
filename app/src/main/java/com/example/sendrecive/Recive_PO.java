@@ -439,6 +439,7 @@ public class Recive_PO extends AppCompatActivity {
                                 reciveListMaster.add(reciveMaster);
                                 supplier_name.setText(reciveMaster.getAccName());
                                 total_category_qty.setText(reciveMaster.getCOUNTX());
+                                item_no.setEnabled(true);
                                 item_no.requestFocus();
                             }
                         } catch (Exception e) {
@@ -568,7 +569,7 @@ public class Recive_PO extends AppCompatActivity {
         cancel = findViewById(R.id.cancel_btn);
         cancel.setOnClickListener(onClickListener);
         reciveDetailList = new ArrayList<>();
-
+        item_no.setEnabled(false);
     }
     private void askForPrint() {
 //        AlertDialog.Builder builder = new AlertDialog.Builder(Recive_PO.this);
@@ -646,26 +647,31 @@ public class Recive_PO extends AppCompatActivity {
                     break;
                 case R.id.save:
                     view.startAnimation(buttonClick);
-                    if (tableCheckData.getChildCount() > 0)
-                    {
-                        voucherNo_text = voucher_no.getText().toString().trim();
-                        if (TextUtils.isEmpty(voucherNo_text)) {
-                            voucher_no.setError("Required");
-                            voucher_no.requestFocus();
-                        } else {
-                            setVoucherNoToDetailList(voucherNo_text);
-                            Log.e("reciveListMaster==",reciveListMaster.size()+"");
-                            reciveListMaster.get(0).setVENDOR_VHFNO(voucherNo_text);
-                            saveDataSendtoURL();
-                            addMasterToDB();
-                            addDetailToDB();
+                    try {
+                        if (tableCheckData.getChildCount() > 0)
+                        {
+                            voucherNo_text = voucher_no.getText().toString().trim();
+                            if (TextUtils.isEmpty(voucherNo_text)) {
+                                voucher_no.setError("Required");
+                                voucher_no.requestFocus();
+                            } else {
+                                setVoucherNoToDetailList(voucherNo_text);
+                                Log.e("reciveListMaster==",reciveListMaster.size()+"");
+                                reciveListMaster.get(0).setVENDOR_VHFNO(voucherNo_text);
+                                saveDataSendtoURL();
+                                addMasterToDB();
+                                addDetailToDB();
+                            }
+
                         }
 
+                        else {
+                            Toast.makeText(context, "املى  بيانات الجدول ", Toast.LENGTH_SHORT).show();
+                        }
+                    }catch (Exception e){
+                        Toast.makeText(context, "تأكد من  بيانات الجدول ", Toast.LENGTH_SHORT).show();
                     }
 
-                    else {
-                        Toast.makeText(context, "املى  بيانات الجدول ", Toast.LENGTH_SHORT).show();
-                    }
 
 
 
@@ -1398,7 +1404,7 @@ public class Recive_PO extends AppCompatActivity {
                 jsonObjectDetail.put("EXPDATE", reciveDetailList.get(i).getEXPDATE());
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.e("   e.printStackTrace9===", ""+  e.getMessage());
+                Log.e("e.printStackTrace9=", ""+  e.getMessage());
             }
 
         }
@@ -1411,14 +1417,14 @@ public class Recive_PO extends AppCompatActivity {
             Log.e("finalObjectMas",""+finalObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e("   e.printStackTrace99==", ""+  e.getMessage());
+            Log.e("StackTrace99==", ""+  e.getMessage());
         }
         try {
             finalObject.put("DETAIL", j.toString());
             Log.e("finalObjectDETAIL",""+finalObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e("   e.printStackTrace10==", ""+  e.getMessage());
+            Log.e("StackTrace10==", ""+  e.getMessage());
         }
 
         params.put("JSONSTR", finalObject.toString());
@@ -1638,6 +1644,7 @@ public class Recive_PO extends AppCompatActivity {
         counter=0;
         position=1;
         transaction_no.requestFocus();
+        item_no.setEnabled(false);
         total.setText("");
     }
     void  clearLists(){
