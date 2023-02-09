@@ -21,6 +21,15 @@ public class ReciveDetail {
     private    String UnitID;
     private    String    VSerial;
     private String       F_D;
+    private  String taxPer;
+
+    public String getTaxPer() {
+        return taxPer;
+    }
+
+    public void setTaxPer(String taxPer) {
+        this.taxPer = taxPer;
+    }
 
     public String getF_D() {
         return F_D;

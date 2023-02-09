@@ -13,6 +13,15 @@ public class ItemInfo {
     private String DiscLV;
     private String  VSerial;
     private String  F_D;
+    private String taxperc;
+
+    public String getTaxperc() {
+        return taxperc;
+    }
+
+    public void setTaxperc(String taxperc) {
+        this.taxperc = taxperc;
+    }
 
     public String getF_D() {
         return F_D;

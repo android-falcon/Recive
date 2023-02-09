@@ -143,7 +143,7 @@ public class Recive_Direct extends AppCompatActivity {
     private List<String> listAreaName_filtered=new ArrayList<>();
     private  List<VendorInfo> listAllVendor=new ArrayList<>();
     private  List<VendorInfo> listAllVendor_filtered=new ArrayList<>();
-    Spinner unitSpinner;
+//    Spinner unitSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -308,10 +308,16 @@ public class Recive_Direct extends AppCompatActivity {
 //                            itemInfo.setAccCode(transactioRecive.getString("AccCode"));
                             itemInfo.setItemOCode(transactioRecive.getString("ItemOCode"));
                             itemInfo.setItemNameA(transactioRecive.getString("ItemNameA"));
-                            itemInfo.setPRICE(transactioRecive.getString("PRICE"));
+//                            itemInfo.setPRICE(transactioRecive.getString("PRICE"));
+                            itemInfo.setPRICE(transactioRecive.getString("LASTPRICE"));
                             itemInfo.setTAXPERC(transactioRecive.getString("TAXPERC"));
-                            itemInfo.setF_D(transactioRecive.getString("F_D"));
-                            Log.e("itemInfo",""+itemInfo.getF_D());
+                            try {
+                                itemInfo.setF_D(transactioRecive.getString("F_D"));
+                            }catch ( Exception e){
+                                itemInfo.setF_D(itemInfo.getPRICE().toString());
+                            }
+
+//                            Log.e("itemInfo",""+itemInfo.getF_D());
                             setData(itemInfo);
                             itemInfoList.add(itemInfo);
 //                                addToDB();
@@ -571,7 +577,7 @@ public class Recive_Direct extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void initView() {
         GrnTextView=findViewById(R.id.GrnTextView);
-        unitSpinner=findViewById(R.id.item_unit);
+//        unitSpinner=findViewById(R.id.item_unit);
         transaction_no = (EditText) findViewById(R.id.transaction_no);
         calenderdialog_image=findViewById(R.id.calenderdialog_image);
         search_image=findViewById(R.id.search_image);
@@ -1239,7 +1245,7 @@ public class Recive_Direct extends AppCompatActivity {
               double total= Double.parseDouble( qty.getText().toString() )*Double.parseDouble(price.getText().toString());
 
                 String[] record = {item_name.getText().toString(), qty.getText().toString() + "",
-                        free_qty.getText().toString(),new DecimalFormat("###.###").format(total)+""};
+                        free_qty.getText().toString(),convertToEnglish(new DecimalFormat("###.###").format(total)+"")};
 
                 TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                 row.setLayoutParams(lp);
@@ -1314,7 +1320,7 @@ public class Recive_Direct extends AppCompatActivity {
 //                .sum();
         totalValue= reciveDetailList_DSD.stream().map(ReciveDetail::getTOTAL).mapToDouble(Double::parseDouble).sum();
         Log.e("setTotalBalance",""+totalValue);
-        total.setText(totalValue+"");
+        total.setText(convertToEnglish(new DecimalFormat("###.###").format(totalValue)+""));
 //        for(int i=0;i<reciveDetailList_DSD.size();i++){
 //            totalValue+=reciveDetailList_DSD.get(i).getTOTAL();
 //        }
@@ -1423,20 +1429,23 @@ public class Recive_Direct extends AppCompatActivity {
 
 
         data.setRECEIVED_QTY(qty.getText().toString());
-        double CountOfItems=dataBaseHandler.getConvRate(item_no.getText().toString().trim(), unitSpinner.getSelectedItem().toString());
-        if(!unitSpinner.getSelectedItem().equals("One Unit"))
-        {  data.setUnitID(unitSpinner.getSelectedItem().toString());
-            data.setCal_Qty(String.valueOf( Double.parseDouble(data.getORDER_QTY())*CountOfItems));
-            double price =dataBaseHandler.getunitPrice(item_no.getText().toString().trim(), unitSpinner.getSelectedItem().toString());
-            data.setPRICE((price/Double.parseDouble(data.getCal_Qty() ))+"");
-        }
-        else {
-            data.setUnitID(unitSpinner.getSelectedItem().toString());
-            data.setCal_Qty(data.getORDER_QTY());
+//        double CountOfItems=dataBaseHandler.getConvRate(item_no.getText().toString().trim(), unitSpinner.getSelectedItem().toString());
+//        if(!unitSpinner.getSelectedItem().equals("One Unit"))
+//        {  data.setUnitID(unitSpinner.getSelectedItem().toString());
+//            data.setCal_Qty(String.valueOf( Double.parseDouble(data.getORDER_QTY())*CountOfItems));
+//            double price =dataBaseHandler.getunitPrice(item_no.getText().toString().trim(), unitSpinner.getSelectedItem().toString());
+//            data.setPRICE((price/Double.parseDouble(data.getCal_Qty() ))+"");
+//        }
+//        else {
+//            data.setUnitID(unitSpinner.getSelectedItem().toString());
+//            data.setCal_Qty(data.getORDER_QTY());
+//
+//            data.setPRICE(price.getText().toString());
+//
+//        }
+        data.setCal_Qty(data.getORDER_QTY());
 
-            data.setPRICE(price.getText().toString());
-
-        }
+        data.setPRICE(price.getText().toString());
         data.setDISCL("0");
 
         data.setINDATE(convertToEnglish(today));
@@ -1449,7 +1458,7 @@ public class Recive_Direct extends AppCompatActivity {
        data.setITEM_NAME(itemInfoList.get(0).getItemNameA());
        data.setF_D(fd_text);
         reciveDetailList_DSD.add(data);
-        Log.e("listSize",""+reciveDetailList_DSD.size()+"\tgetF_D="+   data.getF_D());
+//        Log.e("listSize",""+reciveDetailList_DSD.size()+"\tgetF_D="+   data.getF_D());
         Log.e("dataunit==",""+data.getUnitID()+" Cal_Qty=="+   data.getCal_Qty()+"  price=="+data.getPRICE());
     }
 
@@ -1947,7 +1956,7 @@ Log.e("itemUnits",itemUnits.size()+"");
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line, itemUnits);
 
-        unitSpinner.setAdapter(arrayAdapter);
+//        unitSpinner.setAdapter(arrayAdapter);
 //        try {
 //            for(int i=0;i<itemUnits.size();i++)
 //                if(itemUnits.get(i).equals(list.get(position).getUnitID()))
