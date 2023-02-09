@@ -24,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.example.sendrecive.Models.DSD_VendorItems;
 import com.example.sendrecive.Models.ItemInfo;
 import com.example.sendrecive.Models.ReciveDetail;
 import com.example.sendrecive.Models.ReciveMaster;
@@ -130,8 +131,8 @@ public class Recive_PO extends AppCompatActivity {
     boolean dayCorrect=false,monthCorrect=false,yearCorrect=false,leepYear=false,monthTow=false;
     String fullDate="";
     LinearLayout linearDate;
-    TextView total;
-    double totalValue=0;
+    TextView total,sub_total;
+    double totalValue=0,totalTax=0;
    TextView GrnTextView;
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -279,13 +280,14 @@ public class Recive_PO extends AppCompatActivity {
 
     private void updateTotalqty() {
         reciver_category_qty.setText(counter + "");
+        setTotalBalance();
         Log.e("countItems", "" + counter);
     }
 
     private void getItemInfo(String transNo_text, String itemNo_text) {
 //        final String url = "http://10.0.0.22:8081/GetOrderInfo?ORDERNO="+transNo_text;
         final String url = "http://"+ipAddres+"/GetOrderItems?ORDERNO=" + transNo_text + "&ITEMOCODE=" + itemNo_text;
-
+        Log.e("getItemInfo",""+url);
         JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
 
@@ -293,6 +295,7 @@ public class Recive_PO extends AppCompatActivity {
                     public void onResponse(JSONArray jsonArray) {
                         try {
                             recived_qty.setEnabled(true);
+//                            Log.e("onResponse: ", "" + jsonArray.getString(0));
                             recived_qty.requestFocus();
                             Log.e("onResponse: ", "" + jsonArray.getString(0));
 
@@ -308,16 +311,23 @@ public class Recive_PO extends AppCompatActivity {
                                 reciveMaster.setBonus(itemInfo.getString("Bonus"));
                                 reciveMaster.setPriceL((itemInfo.getString("PriceL")));
                                 reciveMaster.setNetTL(itemInfo.getString("NetTL"));
+                                reciveMaster.setTaxperc(itemInfo.getString("TTAXPERC"));
                                 reciveMaster.setTaxLV((itemInfo.getString("TaxLV")));
                                 reciveMaster.setDiscLV(itemInfo.getString("DiscLV"));//test
                                 reciveMaster.setPriceL(itemInfo.getString("PriceL"));
                                 reciveMaster.setVSerial(itemInfo.getString("VSerial"));
-                                reciveMaster.setF_D(itemInfo.getString("F_D"));
-                                Log.e("setVSerial: ", "setVSerial" + itemInfo.getString("VSerial"));
-                                Log.e("setVSerial: ", "setVSerial" + itemInfo.getString("VSerial"));
+                                try {
+                                    reciveMaster.setF_D(itemInfo.getString("F_D"));
+                                }catch ( Exception e){
+                                    reciveMaster.setF_D(reciveMaster.getPriceL().toString());
+                                }
+
+//                                Log.e("setVSerial: ", "setVSerial" + itemInfo.getString("VSerial"));
                                 pricevalue = reciveMaster.getPriceL();
-                                setItemInfo(reciveMaster);
-                                itemInfoList.add(reciveMaster);
+                                Log.e("setPriceL: ", "1-reciveMaster" + reciveMaster.getPriceL());
+                                getItemInfo_2(transNo_text,itemNo_text,reciveMaster);
+//                                setItemInfo(reciveMaster);
+//                                itemInfoList.add(reciveMaster);
 //                                addToDB();
                             }
                         } catch (Exception e) {
@@ -410,7 +420,123 @@ public class Recive_PO extends AppCompatActivity {
         MySingeltone.getmInstance(Recive_PO.this).addToRequestQueue(stringRequest);
 
     }
+    private void getItemInfo_2(String transNo_text, String itemNo_text , ItemInfo reciveMaster) {
+//        GetItems?ITEMCODE=20001
+//        final String url = "http://10.0.0.22:8081/GetOrderInfo?ORDERNO="+transNo_text;
+        final String url = "http://"+ipAddres+"/GetItems?ITEMCODE=" + itemNo_text;
 
+        Log.e("getItemInfo_2",""+url);
+        JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+                        try {
+                            recived_qty.setEnabled(true);
+//                            Log.e("onResponse: ", "" + jsonArray.getString(0));
+
+                            itemInfoList.clear();
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject transactioRecive = jsonArray.getJSONObject(0);
+
+                                reciveMaster.setPriceL(transactioRecive.getString("PRICE"));
+
+                                Log.e("setPriceL: ", "reciveMaster" + reciveMaster.getPriceL());
+                                pricevalue = reciveMaster.getPriceL();
+                                setItemInfo(reciveMaster);
+                                itemInfoList.add(reciveMaster);
+
+                            }
+                        } catch (Exception e) {
+                            Log.e("Exception===", "" + e.getMessage());
+                        }
+                    }
+
+
+                }
+
+                , new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if(error.getCause() instanceof JSONException)
+                {
+                    displayErrorDialog(item_no.getText().toString()+" رقم المادة غير موجود ");
+
+                    item_no.setSelection(item_no.getText().length() , 0);
+                    item_no.setText("");
+                    item_no.requestFocus();
+                }
+                else
+                if ((error instanceof TimeoutError) || (error instanceof NoConnectionError)) {
+                    Toast.makeText(context,
+                            "تأكد من اتصال الانترنت",
+                            Toast.LENGTH_SHORT).show();
+
+                } else if (error instanceof AuthFailureError) {
+                    //TODO
+                } else if (error instanceof ServerError) {
+                    Toast.makeText(context,
+                            "تأكد من اتصال الانترنت",
+                            Toast.LENGTH_SHORT).show();
+                    //TODO
+                } else if (error instanceof NetworkError) {
+                    Toast.makeText(context,
+                            "تأكد من اتصال الانترنت",
+                            Toast.LENGTH_SHORT).show();
+                    //TODO
+                } else if (error instanceof ParseError) {
+                    if(error.equals("EXPORTED")){
+
+                    }
+//                    displayErrorDialog("رقم المورد  خاطئ");
+                    //TODO
+                }
+
+                Log.e("onErrorResponse: ", "" + error.getMessage());
+                notFountItem = true;
+
+//                displayErrorDialog("رقم المادةغير موجود");
+
+//
+
+            }
+
+        });
+        stringRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        stringRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        MySingeltone.getmInstance(Recive_PO.this).addToRequestQueue(stringRequest);
+
+    }
     private void getData(final String transNo) {
 //       String URL_TO_HIT = "http://" + ipAddress + "/VANSALES_WEB_SERVICE/index.php";
         final String url = "http://"+ipAddres+"/GetOrderInfo?ORDERNO=" + transNo;
@@ -537,6 +663,7 @@ public class Recive_PO extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void initView() {
+        sub_total=(TextView) findViewById(R.id.sub_total);
         total=(TextView) findViewById(R.id.total);
         date = (TextView) findViewById(R.id.date_expire);
         GrnTextView=findViewById(R.id.GrnTextView);
@@ -635,8 +762,14 @@ public class Recive_PO extends AppCompatActivity {
             switch (view.getId()) {
                 case R.id.add_qty:
                     view.startAnimation(animation);
-                    boolean result = checkQtyCategory();
-                    continueAdd = false;
+                    boolean result=false;
+                    try {
+                        result = checkQtyCategory();
+                        continueAdd = false;
+                    }catch (Exception e){
+
+                    }
+
                     if (result) {
                         addItemTotable();
                     }
@@ -710,6 +843,8 @@ public class Recive_PO extends AppCompatActivity {
             }
         }
     };
+
+
 
 
     private void dialogEditDate() {
@@ -1007,7 +1142,7 @@ public class Recive_PO extends AppCompatActivity {
                 for (int i = 0; i < 4; i++) {
            double total=Double.parseDouble( reciveDetailList.get(index).getRECEIVED_QTY())*Double.parseDouble(reciveDetailList.get(index).getPRICE())  ;
                     String[] record = {item_name.getText().toString(), reciveDetailList.get(index).getRECEIVED_QTY() + "",
-                            free_qty.getText().toString(),new DecimalFormat("###.###").format(total)+""};
+                            free_qty.getText().toString(),convertToEnglish(new DecimalFormat("###.###").format(total))+""};
 
                     TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                     row.setLayoutParams(lp);
@@ -1075,7 +1210,7 @@ public class Recive_PO extends AppCompatActivity {
                 for (int i = 0; i <4; i++) {
                   double total=  qty_total*itemInfoList.get(0).getPriceL();
                     String[] record = {item_name.getText().toString(), qty_total + "",
-                            free_qty.getText().toString(),new DecimalFormat("###.###").format(total)+""};
+                            free_qty.getText().toString(),convertToEnglish(new DecimalFormat("###.###").format(total))+""};
 
                     TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                     row.setLayoutParams(lp);
@@ -1279,6 +1414,12 @@ public class Recive_PO extends AppCompatActivity {
         data.setEXPDATE(date.getText().toString());
         data.setITEM_NAME(itemInfoList.get(0).getDELIVERY_ItemName());
         data.setF_D(fd_text);
+        data.setTaxPer(itemInfoList.get(0).getTaxperc());
+
+        double total=Double.parseDouble(data.getPRICE())*Double.parseDouble(data.getRECEIVED_QTY());
+
+        data.setTOTAL( String.valueOf(total));
+
         reciveDetailList.add(data);
         Log.e("listSize", "" + reciveDetailList.size() + "/t" + data.getRECEIVED_QTY());
     }
@@ -1651,6 +1792,7 @@ public class Recive_PO extends AppCompatActivity {
         transaction_no.requestFocus();
         item_no.setEnabled(false);
         total.setText("");
+        sub_total.setText("");
     }
     void  clearLists(){
         reciveDetailList.clear();
@@ -1686,7 +1828,7 @@ public class Recive_PO extends AppCompatActivity {
         dateExpire_text = date.getText().toString().trim();
         reciverCategory_text = reciver_category_qty.getText().toString().trim();
         voucherNo_text = voucher_no.getText().toString().trim();
-Log.e("checkFildesRequired","checkFildesRequired");
+        Log.e("checkFildesRequired","checkFildesRequired");
         if (TextUtils.isEmpty(transNo_text)) {
             allFull = false;
             transaction_no.setError("Required");
@@ -1926,7 +2068,11 @@ Log.e("checkFildesRequired","checkFildesRequired");
 //                        clearAllData();
 
                     }
-                    else Log.e("tag", "****Failed to export data Please check internet connection");
+                    else {
+                        errorDialog(description);
+                    }
+
+                        Log.e("tag", "****Failed to export data Please check internet connection");
 
 
             }
@@ -1939,26 +2085,24 @@ Log.e("checkFildesRequired","checkFildesRequired");
 
     }
 
+    private void errorDialog(String title) {
 
+//
+        new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.ERROR_TYPE)
+                .setTitleText("تعذر حفظ")
+                .setContentText(""+title)
+                .hideConfirmButton()
+                .show();
+
+
+    }
     private void savedDialog() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(Recive_PO.this);
-//        builder.setTitle(" ");
-//
-//        builder.setCancelable(true);
-//        builder.setMessage("   GRN = "+maxSerial+"   ");
-//        AlertDialog alertDialog = builder.create();
-//        alertDialog.show();
-//
         new SweetAlertDialog(Recive_PO.this, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText("تم الحفظ بنجاح")
                 .setContentText("  GRN " +maxSerial)
                 .hideConfirmButton()
                 .show();
         GrnTextView.setText(maxSerial+"");
-//
-
-    //    Toast.makeText(context, "تم الحفظ بنجاح"+"  GRN \t " +maxSerial, Toast.LENGTH_LONG).show();
-
     }
     private void updateQty(  ReciveDetail reciveDetail, String qty) {
 
@@ -1995,17 +2139,58 @@ Log.e("checkFildesRequired","checkFildesRequired");
             qty_total = newqty;
         }
         int totalQty=(int)qty_total;
+            double total=0;
+        if(Double.parseDouble(reciveDetailList.get(index).getPRICE())!=0){
+             total=Double.parseDouble(reciveDetailList.get(index).getPRICE())*Double.parseDouble(reciveDetailList.get(index).getRECEIVED_QTY());
+
+        }else  total=Double.parseDouble(reciveDetailList.get(index).getF_D())*Double.parseDouble(reciveDetailList.get(index).getRECEIVED_QTY());
 
 
+            reciveDetailList.get(index).setTOTAL(String.valueOf(total) );
         reciveDetailList.get(index).setRECEIVED_QTY(totalQty+"");
         Log.e("reciveDetailList","index="+   reciveDetailList.get(index).getRECEIVED_QTY());
     }}}
-    private void setTotalBalance() {
-        totalValue=0;
+    private double setTotalBalance() {
+        try {
 
-        totalValue= reciveDetailList.stream().map(ReciveDetail::getTOTAL).mapToDouble(Double::parseDouble).sum();
-        Log.e("setTotalBalance",""+totalValue);
-        total.setText(totalValue+"");
+
+        totalValue = 0;
+
+        totalValue = reciveDetailList.stream().map(ReciveDetail::getTOTAL).mapToDouble(Double::parseDouble).sum();
+        Log.e("setTotalBalance", "" + totalValue);
+
+        total.setText(convertToEnglish(new DecimalFormat("###.###").format(totalValue)));
+        getSubTotal();
+    }catch (Exception e){
+
+        }
+        return  totalValue;
+
+    }
+    public  void getSubTotal() {
+        try {
+        totalTax = 0;
+        for (int i = 0; i < reciveDetailList.size(); i++) {
+//            totalTax += (Double.parseDouble(reciveDetailList.get(i).getRECEIVED_QTY()) * Double.parseDouble(reciveDetailList.get(i).getPRICE()));
+            try {
+                double tax=Double.parseDouble( reciveDetailList.get(i).getPRICE())*Double.parseDouble(reciveDetailList.get(i).getTaxPer());
+                double taxvalue=Double.parseDouble( reciveDetailList.get(i).getRECEIVED_QTY())*tax;
+                double amount=Double.parseDouble(reciveDetailList.get(i).getRECEIVED_QTY())*Double.parseDouble(reciveDetailList.get(i).getPRICE());
+
+
+                totalTax+=amount-taxvalue;
+
+            }catch ( Exception e){
+
+
+            }
+        }
+        sub_total.setText(convertToEnglish(new DecimalFormat("###.###").format(totalTax)));
+        Log.e("getSubTotal", "=" + totalTax);
+    }catch (Exception e){
+            sub_total.setText("0.0");
+        }
+
 
     }
 }
