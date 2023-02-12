@@ -11,7 +11,7 @@
         android:elevation="2dp"
         android:gravity="center"
         android:padding="3dp"
-        android:text="v 30.6"
+        android:text="v 30.7"
         android:textColor="@color/purple_dark"
         android:textSize="18sp" />
     <LinearLayout

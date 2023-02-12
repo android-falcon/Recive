@@ -45,14 +45,15 @@ public class PrintPO extends AppCompatActivity {
     LinearLayout lineartransaction;
     AlphaAnimation buttonClick;
     Animation animation;
-    TextView supplier_name, item_name, qty_required, free_qty, total_category_qty, reciver_category_qty,date, transaction_no, item_no, recived_qty, voucher_no,variableText;
+
+    TextView total,supplier_name, item_name, qty_required, free_qty, total_category_qty, reciver_category_qty,date, transaction_no, item_no, recived_qty, voucher_no,variableText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_print_po);
         keyPrint = getIntent().getStringExtra("Key");
         buttonClick = new AlphaAnimation(1F, 0.2F);
-
+        total=findViewById(R.id.total);
         Log.e("onCreate","");
         animation = AnimationUtils.loadAnimation(getBaseContext(), R.anim.zoom_in);
         Log.e("keyPrint",""+keyPrint);
@@ -115,11 +116,15 @@ public class PrintPO extends AppCompatActivity {
             date.setText(MasterListPrintPo.get(0).getVHFDATE());
             voucher_no.setText(MasterListPrintPo.get(0).getVENDOR_VHFNO());
             reciver_category_qty.setText(DetailListPrintPo.size()+"");
+            double alltotal=0;
             for(int i=0;i<DetailListPrintPo.size();i++)
             {
                 fillTable(i);
-            }
 
+                alltotal+=Double.parseDouble(DetailListPrintPo.get(i).getTOTAL())  ;
+
+            }
+            total.setText(alltotal+"");
 
         }
         else{
@@ -157,8 +162,6 @@ public class PrintPO extends AppCompatActivity {
                 row.addView(textView);
             }
         tableCheckData.addView(row);
-
-
 
 
 

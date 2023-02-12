@@ -322,9 +322,9 @@ public class Recive_PO extends AppCompatActivity {
 //                                Log.e("setVSerial: ", "setVSerial" + itemInfo.getString("VSerial"));
                                 pricevalue = reciveMaster.getPriceL();
                                 Log.e("setPriceL: ", "1-reciveMaster" + reciveMaster.getPriceL());
-                                getItemInfo_2(transNo_text,itemNo_text,reciveMaster);
-//                                setItemInfo(reciveMaster);
-//                                itemInfoList.add(reciveMaster);
+//                                getItemInfo_2(transNo_text,itemNo_text,reciveMaster);
+                                setItemInfo(reciveMaster);
+                                itemInfoList.add(reciveMaster);
 //                                addToDB();
                             }
                         } catch (Exception e) {
@@ -436,10 +436,10 @@ public class Recive_PO extends AppCompatActivity {
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject transactioRecive = jsonArray.getJSONObject(0);
 
-                                reciveMaster.setPriceL(transactioRecive.getString("PRICE"));
+                               // reciveMaster.setPriceL(transactioRecive.getString("PRICE"));
 
                                 Log.e("setPriceL: ", "reciveMaster" + reciveMaster.getPriceL());
-                                pricevalue = reciveMaster.getPriceL();
+                              //  pricevalue = reciveMaster.getPriceL();
                                 setItemInfo(reciveMaster);
                                 itemInfoList.add(reciveMaster);
 
@@ -1438,7 +1438,16 @@ public class Recive_PO extends AppCompatActivity {
             jsonObjectMASTER.put("VENDOR_VHFDATE",convertToEnglish( reciveListMaster.get(0).getVENDOR_VHFDATE()));
             jsonObjectMASTER.put("SUBTOTAL", reciveListMaster.get(0).getSUBTOTAL());
             jsonObjectMASTER.put("TAX", reciveListMaster.get(0).getTAX()+"");
-            jsonObjectMASTER.put("NETTOTAL", reciveListMaster.get(0).getNETTOTAL());
+            try{
+                double sum =
+                        reciveDetailList.stream().map(ReciveDetail::getTOTAL).mapToDouble(Double::parseDouble).sum();
+                jsonObjectMASTER.put("NETTOTAL", sum+"");
+               reciveListMaster.get(0).setNETTOTAL(sum+"");
+                Log.e("sum=",sum+"");
+            }catch (Exception e){
+                  jsonObjectMASTER.put("NETTOTAL", reciveListMaster.get(0).getNETTOTAL()+"");
+            }
+
             jsonObjectMASTER.put("IS_POSTED", reciveListMaster.get(0).getIS_POSTED()+"");
             jsonObjectMASTER.put("TAXKIND", reciveListMaster.get(0).getTAXKIND());
             jsonObjectMASTER.put("DISC", reciveListMaster.get(0).getDISC());
@@ -1465,6 +1474,7 @@ public class Recive_PO extends AppCompatActivity {
                 jsonObjectDetail.put("VHFDATE", convertToEnglish(date.getText().toString()));
                 jsonObjectDetail.put("RECEIVED_QTY", reciveDetailList.get(i).getRECEIVED_QTY());
                 jsonObjectDetail.put("BONUS", reciveDetailList.get(i).getBONUS());
+                Log.e("PRICE==",reciveDetailList.get(i).getPRICE()+"");
                 jsonObjectDetail.put("PRICE", reciveDetailList.get(i).getPRICE());
                 jsonObjectDetail.put("TOTAL", reciveDetailList.get(i).getTOTAL());
                 jsonObjectDetail.put("TAX", reciveDetailList.get(i).getTAXDETAIL());
@@ -2008,7 +2018,7 @@ public class Recive_PO extends AppCompatActivity {
                 request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                 HttpResponse response = client.execute(request);
-
+                Log.e("finalObject==", "" + finalObject.toString().trim());
                 BufferedReader in = new BufferedReader(new
                         InputStreamReader(response.getEntity().getContent()));
 
@@ -2166,23 +2176,32 @@ public class Recive_PO extends AppCompatActivity {
     }
     public  void getSubTotal() {
         try {
+            Log.e("getSubTotal==="," getSubTotal "+reciveDetailList.size());
         totalTax = 0;
         for (int i = 0; i < reciveDetailList.size(); i++) {
 //            totalTax += (Double.parseDouble(reciveDetailList.get(i).getRECEIVED_QTY()) * Double.parseDouble(reciveDetailList.get(i).getPRICE()));
             try {
-                double tax=Double.parseDouble( reciveDetailList.get(i).getPRICE())*Double.parseDouble(reciveDetailList.get(i).getTaxPer());
+                double tax=Double.parseDouble( reciveDetailList.get(i).getPRICE())*(Double.parseDouble(reciveDetailList.get(i).getTaxPer())/100);
                 double taxvalue=Double.parseDouble( reciveDetailList.get(i).getRECEIVED_QTY())*tax;
                 double amount=Double.parseDouble(reciveDetailList.get(i).getRECEIVED_QTY())*Double.parseDouble(reciveDetailList.get(i).getPRICE());
-
-
+                Log.e("getPRICE===",reciveDetailList.get(i).getPRICE());
+                Log.e("getTaxPer===",reciveDetailList.get(i).getTaxPer());
+                Log.e("tax===",tax+"");
+                Log.e("getRECEIVED_QTY===",reciveDetailList.get(i).getRECEIVED_QTY()+"");
+                Log.e("getPRICE===",reciveDetailList.get(i).getPRICE());
+Log.e("amount==",amount+" taxvalue== "+taxvalue);
+                Log.e("totalTaxforitem===",amount-taxvalue+" ");
                 totalTax+=amount-taxvalue;
 
+                Log.e("totalTax===",totalTax+" ");
             }catch ( Exception e){
 
 
             }
         }
         sub_total.setText(convertToEnglish(new DecimalFormat("###.###").format(totalTax)));
+        if( reciveListMaster.size()>0)    reciveListMaster.get(0).setSUBTOTAL(totalTax+"");
+
         Log.e("getSubTotal", "=" + totalTax);
     }catch (Exception e){
             sub_total.setText("0.0");
