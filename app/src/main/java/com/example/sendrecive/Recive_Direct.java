@@ -186,11 +186,23 @@ public class Recive_Direct extends AppCompatActivity {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
-                            if(!free_qty.getText().equals(""))
-                            {
-                                free_qty.setSelectAllOnFocus(true);
-                            }
-                            free_qty.requestFocus();
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //free_qty.setEnabled(true);
+                                    if(!qty.getText().toString().equals(""))
+                                    free_qty.requestFocus();
+                                    else
+                                        qty.requestFocus();
+                                }
+
+                            }, 100);
+//                            if(!free_qty.getText().equals(""))
+//                            {
+//                               free_qty.setSelectAllOnFocus(true);
+//                            }
+
 
                             return true;
                         default:
@@ -206,9 +218,9 @@ public class Recive_Direct extends AppCompatActivity {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
-                        date.requestFocus();
-                        linearDate.setBackground(getResources().getDrawable(R.drawable.edite_fucasable));
-
+                       // date.requestFocus();
+                      //  linearDate.setBackground(getResources().getDrawable(R.drawable.edite_fucasable));
+                           addItemTotable();
                             return true;
                         default:
                             break;
@@ -247,10 +259,19 @@ public class Recive_Direct extends AppCompatActivity {
                             case KeyEvent.KEYCODE_DPAD_CENTER:
                             case KeyEvent.KEYCODE_ENTER:
                                 if ((!item_no.getText().equals("")) && (!supplier_No.getText().equals(""))) {
-                                    suplier_text = supplier_No.getText().toString();
-                                    itemNo_text = item_no.getText().toString();
-                                    getItemInfo(suplier_text, itemNo_text);
-                                    fillUnitspinner();
+                                    final Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            suplier_text = supplier_No.getText().toString();
+                                            itemNo_text = item_no.getText().toString();
+                                            getItemInfo(suplier_text, itemNo_text);
+                                            fillUnitspinner();
+                                            qty.requestFocus();
+                                        }
+
+                                    }, 100);
+
 //                                    getItemInfo("402001011","6281073260841");
 //                                    ITEMCODE=6281073260841&VENDOR=402001011
 
@@ -1180,7 +1201,7 @@ public class Recive_Direct extends AppCompatActivity {
                 for (int i = 0; i < 4; i++) {
                     double total=Double.parseDouble (reciveDetailList_DSD.get(index).getRECEIVED_QTY())*Double.parseDouble(reciveDetailList_DSD.get(index).getPRICE());
                     String[] record = {item_name.getText().toString(),  reciveDetailList_DSD.get(index).getORDER_QTY()+ "",
-                            free_qty.getText().toString(),new DecimalFormat("###.###").format(total)+""};
+                            free_qty.getText().toString(),convertToEnglish(new DecimalFormat("###.###").format(total))+""};
 
                     TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                     row.setLayoutParams(lp);
@@ -1245,7 +1266,7 @@ public class Recive_Direct extends AppCompatActivity {
               double total= Double.parseDouble( qty.getText().toString() )*Double.parseDouble(price.getText().toString());
 
                 String[] record = {item_name.getText().toString(), qty.getText().toString() + "",
-                        free_qty.getText().toString(),convertToEnglish(new DecimalFormat("###.###").format(total)+"")};
+                        free_qty.getText().toString(),convertToEnglish(new DecimalFormat("###.###").format(total))+""};
 
                 TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                 row.setLayoutParams(lp);

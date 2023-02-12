@@ -218,6 +218,7 @@ public class Recive_PO extends AppCompatActivity {
                                     itemNo_text = item_no.getText().toString();
                                     transNo_text = transaction_no.getText().toString();
                                     getItemInfo(transNo_text, itemNo_text);
+                                    recived_qty.requestFocus();
                                             // getItemInfo("1001", "6251088000206");
 
 
@@ -295,6 +296,8 @@ public class Recive_PO extends AppCompatActivity {
                         try {
                             recived_qty.setEnabled(true);
 //                            Log.e("onResponse: ", "" + jsonArray.getString(0));
+                            recived_qty.requestFocus();
+                            Log.e("onResponse: ", "" + jsonArray.getString(0));
 
                             itemInfoList.clear();
                             for (int i = 0; i < jsonArray.length(); i++) {
