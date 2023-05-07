@@ -1,5 +1,6 @@
 package com.example.sendrecive;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -20,6 +21,7 @@ import com.smarteist.autoimageslider.SliderLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -71,7 +73,11 @@ public class MainActivity extends AppCompatActivity {
     ImportData importData;
 Dialog ItemUnitsdialog;
     Calendar myCalendar;
-
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,15 +177,15 @@ Dialog ItemUnitsdialog;
             @Override
             public void onClick(View v) {
                 try {
-                   // verifyStoragePermissions(MainActivity.this);
+                  verifyStoragePermissions(MainActivity.this);
                     copyFile();
                 }
                 catch (Exception e)
                 {
-                  //  verifyStoragePermissions(MainActivity.this);
+                    verifyStoragePermissions(MainActivity.this);
 
 
-                  //  Toast.makeText(MainActivity.this, ""+getResources().getString(R.string.backup_failed), Toast.LENGTH_SHORT).show();
+                   Toast.makeText(MainActivity.this, "backup_failed", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -475,9 +481,9 @@ Dialog ItemUnitsdialog;
 
 
 
-            String backupDBPath = "DBRoomSendRecive";
+            String backupDBPath = "ReciveDatabase";
 
-            File currentDB= getApplicationContext().getDatabasePath("DBRoomSendRecive");
+            File currentDB= getApplicationContext().getDatabasePath("ReciveDatabase");
             File backupDB = new File(sd, backupDBPath);
 
             if (currentDB.exists()&&isPresent) {
@@ -487,8 +493,6 @@ Dialog ItemUnitsdialog;
                 src.close();
                 dst.close();
                 Toast.makeText(MainActivity.this, "Backup Succesfulley", Toast.LENGTH_SHORT).show();
-//                ShareFile(backupDBPath);
-               // shareWhatsAppA(backupDB,1);
             }else {
 
                 Toast.makeText(MainActivity.this, "Backup Failed", Toast.LENGTH_SHORT).show();
@@ -501,5 +505,18 @@ Dialog ItemUnitsdialog;
         catch (Exception e) {
             Log.e("Settings Backup", e.getMessage());
         }
+    }
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        Log.e("permission",""+permission);
+
+        ActivityCompat.requestPermissions( activity,
+                new String[]{
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                }, 1
+        );
     }
 }
