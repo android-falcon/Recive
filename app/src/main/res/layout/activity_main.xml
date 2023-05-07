@@ -25,6 +25,7 @@
 
                     android:backgroundTint="@color/purple_dark"
                     android:src="@drawable/ic_settings_black_24dp" />
+
                 <androidx.cardview.widget.CardView
                     android:layout_height="210dp"
                     android:layout_marginTop="10dp"

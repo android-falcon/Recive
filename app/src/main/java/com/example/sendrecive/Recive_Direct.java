@@ -554,7 +554,7 @@ public class Recive_Direct extends AppCompatActivity {
                     //TODO
                 } else if (error instanceof ServerError) {
                     Toast.makeText(context,
-                            "تأكد من اتصال الانترنت 2"+error.getCause().getMessage(),
+                            "تأكد من اتصال الانترنت 2"+error.getMessage(),
                             Toast.LENGTH_SHORT).show();
                     //TODO
                 } else if (error instanceof NetworkError) {

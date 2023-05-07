@@ -1392,7 +1392,7 @@ public class Recive_PO extends AppCompatActivity {
     private void adddataToList(String rowNo) {
         ReciveDetail data = new ReciveDetail();
         data.setORDERNUMBER(transaction_no.getText().toString());
-        data.setVSERIAL(rowNo);
+        data.setVSERIAL(itemInfoList.get(0).getVSerial());
         data.setVSerial(itemInfoList.get(0).getVSerial());
         Log.e("VSerial==","VSerial="+itemInfoList.get(0).getVSerial());
         data.setITEMOCODE(item_no.getText().toString());
@@ -1486,7 +1486,7 @@ public class Recive_PO extends AppCompatActivity {
                 jsonObjectDetail.put("EXPDATE", convertToEnglish(reciveDetailList.get(i).getEXPDATE()));
                 Log.e("getAccCode",""+reciveListMaster.get(0).getAccCode());
                 jsonObjectDetail.put("ACCCODE",reciveListMaster.get(0).getAccCode());
-                jsonObjectDetail.put("VSerial",reciveDetailList.get(0).getVSerial());
+//                jsonObjectDetail.put("VSerial",reciveDetailList.get(0).getVSerial());
                 jsonObjectDetail.put("F_D",reciveDetailList.get(i).getF_D());
 
             //    Log.e("VSerial==",""+reciveListMaster.get(i).getAccCode());
@@ -1518,130 +1518,6 @@ public class Recive_PO extends AppCompatActivity {
 
     }
 
-    private void sendData() throws JSONException {
-        Map<String, String> params = new HashMap<>();
-        JSONObject jsonObjectMASTER = new JSONObject();
-        try {
-            jsonObjectMASTER.put("ORDERNO", reciveListMaster.get(0).getORDERNO());
-            jsonObjectMASTER.put("VHFNO", reciveListMaster.get(0).getVHFNO());
-            jsonObjectMASTER.put("VHFDATE", reciveListMaster.get(0).getVHFDATE());
-            jsonObjectMASTER.put("VENDOR_VHFNO", reciveListMaster.get(0).getVENDOR_VHFNO());
-            jsonObjectMASTER.put("VENDOR_VHFDATE", reciveListMaster.get(0).getVENDOR_VHFDATE());
-            jsonObjectMASTER.put("SUBTOTAL", reciveListMaster.get(0).getSUBTOTAL());
-            jsonObjectMASTER.put("TAX", reciveListMaster.get(0).getTAX());
-            jsonObjectMASTER.put("NETTOTAL", reciveListMaster.get(0).getNETTOTAL());
-            jsonObjectMASTER.put("IS_POSTED", reciveListMaster.get(0).getIS_POSTED());
-            jsonObjectMASTER.put("TAXKIND", reciveListMaster.get(0).getTAXKIND());
-            jsonObjectMASTER.put("DISC", reciveListMaster.get(0).getDISC());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("   e.printStackTrace8==", ""+  e.getMessage());
-        }
-
-        JSONObject jsonObjectDetail = null;
-        for (int i = 0; i < reciveDetailList.size(); i++) {
-            jsonObjectDetail = new JSONObject();
-            try {
-                jsonObjectDetail.put("ORDERNO", reciveDetailList.get(i).getORDERNUMBER());
-
-                jsonObjectDetail.put("VHFNO", reciveDetailList.get(i).getVHFNO_DETAIL());
-                jsonObjectDetail.put("ITEMOCODE", reciveDetailList.get(i).getITEMOCODE());
-                jsonObjectDetail.put("VSERIAL", reciveDetailList.get(i).getVSERIAL());
-                jsonObjectDetail.put("ORDER_QTY", reciveDetailList.get(i).getORDER_QTY());
-                jsonObjectDetail.put("ORDER_BONUS", reciveDetailList.get(i).getBONUS());
-                jsonObjectDetail.put("VHFDATE", reciveDetailList.get(i).getVHFDATE_DETAIL());
-                jsonObjectDetail.put("RECEIVED_QTY", reciveDetailList.get(i).getRECEIVED_QTY());
-                jsonObjectDetail.put("BONUS", reciveDetailList.get(i).getBONUS());
-                jsonObjectDetail.put("PRICE", reciveDetailList.get(i).getPRICE());
-                jsonObjectDetail.put("TOTAL", "100");
-                jsonObjectDetail.put("TAX", reciveDetailList.get(i).getTAXDETAIL());
-                jsonObjectDetail.put("INDATE", reciveDetailList.get(i).getINDATE());
-                jsonObjectDetail.put("DISCL", reciveDetailList.get(i).getDISCL());
-                jsonObjectDetail.put("EXPDATE", reciveDetailList.get(i).getEXPDATE());
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("e.printStackTrace9=", ""+  e.getMessage());
-            }
-
-        }
-        JSONArray j = new JSONArray();
-        j.put(jsonObjectDetail);
-
-        JSONObject finalObject=new JSONObject();
-        try {
-            finalObject.put("MASTER", jsonObjectMASTER.toString());
-            Log.e("finalObjectMas",""+finalObject.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("StackTrace99==", ""+  e.getMessage());
-        }
-        try {
-            finalObject.put("DETAIL", j.toString());
-            Log.e("finalObjectDETAIL",""+finalObject.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("StackTrace10==", ""+  e.getMessage());
-        }
-
-        params.put("JSONSTR", finalObject.toString());
-//        JSONObject allData=new JSONObject();
-//        allData.put("JSONSTR", finalObject.toString());
-
-//        Log.e("allData",""+allData);
-
-
-        Log.e("finalObject",""+finalObject.toString());
-        String url = "http://"+ipAddres+"/SaveOrder?JSONSTR=" ;
-        JsonObjectRequest request = null;
-        request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                //                    String code = jsonObject.getString("responceFamily_build");
-                Log.e("respoCode", "" + jsonObject);
-//                    if (code.equals("faild")) {
-//                        Toast.makeText(CompalaintActivity.this, "Family Number  and  build Number not exist ", Toast.LENGTH_SHORT).show();
-//                    }
-//                    if (code.equals("Sucsses"))
-//                    {
-//                        Toast.makeText(CompalaintActivity.this, "thank  ", Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                    if (code.equals("faild_FamilyId")) {
-//                        Toast.makeText(CompalaintActivity.this, "Family number not exist ", Toast.LENGTH_SHORT).show();
-//                    }
-//                    if (code.equals("faild_BuildId")) {
-//                        Toast.makeText(CompalaintActivity.this, "Building number not exist", Toast.LENGTH_SHORT).show();
-//                    }
-
-            }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("error ", "onErrorResponse: " + error);
-                Toast.makeText(Recive_PO.this, "" + error, Toast.LENGTH_SHORT).show();
-            }
-        }
-        );
-        request.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-
-            }
-        });
-        MySingeltone.getmInstance(Recive_PO.this).addToRequestQueue(request);
-
-    }
 
     private void sndToUrl() {
         String url = "http://10.0.0.22:8081/SaveOrder?JSONSTR=" ;

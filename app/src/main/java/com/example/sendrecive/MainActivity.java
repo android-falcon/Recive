@@ -21,6 +21,7 @@ import com.smarteist.autoimageslider.SliderLayout;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,9 +40,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -161,6 +167,22 @@ Dialog ItemUnitsdialog;
        companeyLogo = dialog.findViewById(R.id.companeyLogo);
         final EditText ipText = dialog.findViewById(R.id.ip_textview);
         final CheckBox sameQTY=dialog.findViewById(R.id.sameQTY);
+        dialog.findViewById(R.id.copydata).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                   // verifyStoragePermissions(MainActivity.this);
+                    copyFile();
+                }
+                catch (Exception e)
+                {
+                  //  verifyStoragePermissions(MainActivity.this);
+
+
+                  //  Toast.makeText(MainActivity.this, ""+getResources().getString(R.string.backup_failed), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         companeyLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -437,5 +459,47 @@ Dialog ItemUnitsdialog;
         else
 
             todate.setText(sdf.format(myCalendar.getTime()));
+    }
+    public void copyFile()
+    {
+        try
+        {
+            File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+            File data = Environment.getDataDirectory();
+            boolean isPresent = true;
+            if (!sd.canWrite())
+            {
+                isPresent= sd.mkdir();
+
+            }
+
+
+
+            String backupDBPath = "DBRoomSendRecive";
+
+            File currentDB= getApplicationContext().getDatabasePath("DBRoomSendRecive");
+            File backupDB = new File(sd, backupDBPath);
+
+            if (currentDB.exists()&&isPresent) {
+                FileChannel src = new FileInputStream(currentDB).getChannel();
+                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                Toast.makeText(MainActivity.this, "Backup Succesfulley", Toast.LENGTH_SHORT).show();
+//                ShareFile(backupDBPath);
+               // shareWhatsAppA(backupDB,1);
+            }else {
+
+                Toast.makeText(MainActivity.this, "Backup Failed", Toast.LENGTH_SHORT).show();
+            }
+            isPresent=false;
+
+
+            Log.e("backupDB.getA", backupDB.getAbsolutePath());
+        }
+        catch (Exception e) {
+            Log.e("Settings Backup", e.getMessage());
+        }
     }
 }
