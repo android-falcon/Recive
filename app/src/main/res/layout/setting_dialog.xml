@@ -16,14 +16,14 @@
         android:gravity="center"
         android:padding="3dp"
         android:layout_weight="1"
-        android:text="v 30.9"
+        android:text="v 31.0"
         android:textColor="@color/purple_dark"
         android:textSize="18sp" />
     <TextView
         android:layout_width="match_parent"
-        android:text="نسخ البيانات "
+        android:text=" انقر لنسخ البيانات "
         android:id="@+id/copydata"
-        android:textStyle="bold"
+        android:textStyle="bold|italic"
         android:layout_weight="1"
         android:padding="3dp"
         android:textColor="@color/purple_dark"
