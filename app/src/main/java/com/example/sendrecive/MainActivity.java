@@ -500,7 +500,7 @@ Dialog ItemUnitsdialog;
             isPresent=false;
 
 
-            Log.e("backupDB.getA", backupDB.getAbsolutePath());
+            
         }
         catch (Exception e) {
             Log.e("Settings Backup", e.getMessage());
